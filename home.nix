@@ -1,6 +1,51 @@
 { config, pkgs, lib, ... }:
 let
   secrets = builtins.fromJSON (builtins.readFile ./secrets.json);
+  deepseek-tui-src = pkgs.fetchFromGitHub {
+    owner = "Hmbown";
+    repo = "DeepSeek-TUI";
+    rev = "v0.8.17"; # ganti sesuai release yang mau dipakai
+    hash = "sha256-lEOOFWrIqouM/2m7cSzezNXS3+cSXojvx9YdxuuiWlc=";
+  };
+
+  deepseek-cli = pkgs.rustPlatform.buildRustPackage {
+    pname = "deepseek-tui-cli";
+    version = "0.8.17";
+
+    src = deepseek-tui-src;
+    cargoLock.lockFile = "${deepseek-tui-src}/Cargo.lock";
+
+    cargoHash = "sha256-BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=";
+
+    nativeBuildInputs = [ pkgs.pkg-config ];
+    buildInputs = [ pkgs.dbus ];
+
+    buildAndTestSubdir = "crates/cli";
+  };
+
+  deepseek-tui = pkgs.rustPlatform.buildRustPackage {
+    pname = "deepseek-tui";
+    version = "0.8.17";
+
+    src = deepseek-tui-src;
+    cargoLock.lockFile = "${deepseek-tui-src}/Cargo.lock";
+
+    cargoHash = "sha256-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=";
+
+    nativeBuildInputs = [ pkgs.pkg-config ];
+    buildInputs = [ pkgs.dbus ];
+
+    buildAndTestSubdir = "crates/tui";
+    doCheck = false;
+  };
+  deepseek-tui-combined = pkgs.symlinkJoin {
+    name = "deepseek-tui-combined-0.8.17";
+    paths = [
+     deepseek-cli
+     deepseek-tui
+   ];
+  };
+
 in
 {
   # Modules
@@ -10,41 +55,6 @@ in
 
   # Nixpkgs
   nixpkgs.config.allowUnfree = true;
-  nixpkgs.overlays = [
-    (final: prev: {
-      codex = prev.stdenvNoCC.mkDerivation {
-        pname = "codex";
-        version = "0.121.0";
-
-        src = prev.fetchurl {
-          url = "https://github.com/openai/codex/releases/download/rust-v0.121.0/codex-x86_64-unknown-linux-musl.tar.gz";
-          sha256 = "sha256-J4xysD1OH2YbqCjBzPNuui+I2AdMcOPwMhHb+2MSc8Q=";
-        };
-
-        nativeBuildInputs = [
-          prev.autoPatchelfHook
-          prev.gnutar
-        ];
-
-        buildInputs = [
-          prev.stdenv.cc.cc.lib
-        ];
-
-        dontConfigure = true;
-        dontBuild = true;
-
-        unpackPhase = ''
-          tar -xzf $src
-        '';
-
-        installPhase = ''
-          mkdir -p $out/bin
-          cp codex-x86_64-unknown-linux-musl $out/bin/codex
-          chmod +x $out/bin/codex
-        '';
-      };
-    })
-  ];
 
   # Home metadata
   home.username = "wanmixc";
@@ -56,12 +66,10 @@ in
     bash-language-server
     bat
     bun
-    codex
     direnv
     eza
     fastfetch
     gitui
-    microsoft-edge
     neovim
     ripgrep
     shfmt
@@ -70,11 +78,16 @@ in
     unzip
     yazi
     zoxide
+    starship
+    fzf
+    deepseek-tui-combined
+    btop
   ];
 
   # Session
   home.sessionVariables = {
     EDITOR = "nvim";
+    DEEPSEEK_TUI_BIN = "${deepseek-tui}/bin/deepseek-tui";
   };
 
   # XDG
@@ -85,8 +98,10 @@ in
 
   xdg.configFile = {
     "fastfetch/config.jsonc".source = ./fastfetch/config.jsonc;
+    "fastfetch/logo.txt".source = ./fastfetch/logo.txt;
     "nvim/init.lua".source = ./nvim/init.lua;
     "rmpc/themes/theme.ron".source = ./rmpc/theme.ron;
+    "starship.toml".source = ./starship/starship.toml;
   };
 
   home.activation.codexChromeDevtoolsMcp = lib.hm.dag.entryAfter ["writeBoundary"] ''
