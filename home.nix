@@ -66,7 +66,6 @@ in
     bash-language-server
     bat
     bun
-    direnv
     eza
     fastfetch
     gitui
@@ -76,12 +75,10 @@ in
     sxiv
     tmux
     unzip
-    yazi
-    zoxide
-    starship
     fzf
     deepseek-tui-combined
     btop
+    fish
   ];
 
   # Session
@@ -148,8 +145,57 @@ EOF
   # Programs
   programs = {
     home-manager.enable = true;
-    direnv.enable = true;
     vim.enable = true;
+
+    starship = {
+      enable = true;
+      enableFishIntegration = true;
+    };
+
+    zoxide = {
+      enable = true;
+      enableFishIntegration = true;
+    };
+
+    direnv = {
+      enable = true;
+      nix-direnv.enable = true;
+    };
+
+    fish = {
+       enable = true;
+
+        shellInit = ''
+          fish_add_path ~/.nix-profile/bin
+        '';
+
+        interactiveShellInit = ''
+          # No greeting
+          set fish_greeting
+        fastfetch
+      '';
+
+      shellAliases = {
+        pamcan = "pacman";
+        l      = "eza --icons";
+        ls     = "eza --icons";
+        clear  = "printf '\\033[2J\\033[3J\\033[1;1H'";
+        q      = "qs -c ii";
+        ll     = "eza --icons -T -L 1";
+        l1     = "eza --icons -T -L 1";
+        l2     = "eza --icons -T -L 2";
+      };
+
+      functions = {
+        fish_prompt = {
+          description = "Write out the prompt";
+          body = ''
+            printf '%s@%s %s%s%s > ' $USER $hostname \
+                (set_color $fish_color_cwd) (prompt_pwd) (set_color normal)
+          '';
+        };
+      };
+    };
 
     git = {
       enable = true;
