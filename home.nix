@@ -3,34 +3,35 @@ let
   secrets = builtins.fromJSON (builtins.readFile ./secrets.json);
   deepseek-tui-src = pkgs.fetchFromGitHub {
     owner = "Hmbown";
-    repo = "DeepSeek-TUI";
-    rev = "v0.8.17"; # ganti sesuai release yang mau dipakai
-    hash = "sha256-lEOOFWrIqouM/2m7cSzezNXS3+cSXojvx9YdxuuiWlc=";
+    repo = "CodeWhale";
+    rev = "v0.8.44";
+    hash = "sha256-gdwDAs1xmSII4Ps2DFYNR4XB64lhUjMYldFEoMENl8w=";
   };
 
   deepseek-cli = pkgs.rustPlatform.buildRustPackage {
     pname = "deepseek-tui-cli";
-    version = "0.8.17";
+    version = "0.8.44";
 
     src = deepseek-tui-src;
     cargoLock.lockFile = "${deepseek-tui-src}/Cargo.lock";
 
-    cargoHash = "sha256-BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB=";
+    cargoHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
     nativeBuildInputs = [ pkgs.pkg-config ];
     buildInputs = [ pkgs.dbus ];
 
     buildAndTestSubdir = "crates/cli";
+    doCheck = false;
   };
 
   deepseek-tui = pkgs.rustPlatform.buildRustPackage {
     pname = "deepseek-tui";
-    version = "0.8.17";
+    version = "0.8.44";
 
     src = deepseek-tui-src;
     cargoLock.lockFile = "${deepseek-tui-src}/Cargo.lock";
 
-    cargoHash = "sha256-CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC=";
+    cargoHash = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
 
     nativeBuildInputs = [ pkgs.pkg-config ];
     buildInputs = [ pkgs.dbus ];
@@ -39,7 +40,7 @@ let
     doCheck = false;
   };
   deepseek-tui-combined = pkgs.symlinkJoin {
-    name = "deepseek-tui-combined-0.8.17";
+    name = "deepseek-tui-combined-0.8.44";
     paths = [
      deepseek-cli
      deepseek-tui
