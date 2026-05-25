@@ -6,6 +6,8 @@
 ## General
 | Key | Mode | Action |
 |-----|------|--------|
+| `jj` | i | Exit insert mode |
+| `<leader>q` | n | Close buffer |
 | `<leader><leader>x` | n | Reload nvim config |
 | `:BufOnly` | cmd | Close all buffers except current |
 
@@ -28,6 +30,7 @@
 ## File Tree (nvim-tree)
 | Key | Mode | Action |
 |-----|------|--------|
+| `<leader>e` | n | Toggle file tree |
 | `<leader>tt` | n | Toggle file tree |
 | `<leader>tr` | n | Refresh file tree |
 | `<leader>tn` | n | Find current file in tree |
@@ -111,7 +114,7 @@
 | `ge` | n | Show diagnostic float |
 | `[d` | n | Previous diagnostic |
 | `]d` | n | Next diagnostic |
-| `<space>q` | n | Diagnostic list to loclist |
+| `<leader>dq` | n | Diagnostic list to loclist |
 
 ---
 

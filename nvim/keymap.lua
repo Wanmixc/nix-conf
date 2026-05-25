@@ -3,6 +3,12 @@
 vim.g.mapleader = " "
 vim.keymap.set("n", "<space", "<nop>", { silent = true })
 
+-- exit insert mode
+vim.keymap.set("i", "jj", "<Esc>", { silent = true })
+
+-- close buffer
+vim.keymap.set("n", "<leader>q", ":bd<CR>", { silent = true })
+
 -- resize buffer
 vim.keymap.set("n", "<leader>m", ":MaximizerToggle<CR>")
 

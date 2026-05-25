@@ -70,7 +70,7 @@ cmp.setup({
 vim.keymap.set("n", "ge", function() vim.diagnostic.open_float(0, { scope = "line", border = "single" }) end)
 vim.keymap.set("n", "[d", function() vim.diagnostic.goto_prev() end)
 vim.keymap.set("n", "]d", function() vim.diagnostic.goto_next() end)
-vim.keymap.set("n", "<space>q", function() vim.diagnostic.setloclist() end)
+vim.keymap.set("n", "<leader>dq", function() vim.diagnostic.setloclist() end)
 
 -- LSP keymaps set via LspAttach autocmd
 vim.api.nvim_create_autocmd("LspAttach", {
