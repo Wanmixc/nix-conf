@@ -9,10 +9,12 @@
     mouse = true;
     prefix = "C-a";
     sensibleOnTop = true;
-    terminal = "screen-256color";
+    terminal = "tmux-256color";
 
     baseIndex = 1;
     extraConfig = ''
+      set -ga terminal-features ",*:RGB"
+
       set -g pane-base-index 1
       set -g renumber-windows on
       set -g detach-on-destroy off
