@@ -164,6 +164,7 @@ in
 
       shellAliases = {
         pamcan = "pacman";
+        gc     = "git clone";
         l      = "eza --icons";
         ls     = "eza --icons";
         clear  = "printf '\\033[2J\\033[3J\\033[1;1H'";
