@@ -8,7 +8,7 @@ let
   isWsl =
     lib.hasInfix "WSL" osrelease ||
     lib.hasInfix "Microsoft" osrelease ||
-    builtins.getEnv "WSL_DISTRO_NAME" != "";
+    builtins.getEnv "ubuntu" != "";
   hostModule =
     if isWsl then
       ./hosts/wsl.nix
