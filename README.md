@@ -74,9 +74,14 @@ If present, it may contain:
 
 ```json
 {
-  "github_token": "your github token"
+  "github_token": "your github token",
+  "github_ssh_key_path": "~/.ssh/id_ed25519"
 }
 ```
+
+`github_token` is optional and enables authenticated HTTPS clone for GitHub, including private repositories.
+
+`github_ssh_key_path` is optional and defaults to `~/.ssh/id_ed25519`. Home Manager wires that key into the generated SSH config for `github.com`, so `git clone git@github.com:owner/repo.git` works after `switch` as long as the private key already exists on the machine and is registered in GitHub.
 
 If the file is absent, the configuration still evaluates successfully.
 
