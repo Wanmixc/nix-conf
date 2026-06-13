@@ -1,41 +1,40 @@
 { pkgs, lib, ... }:
 let
-  secretsPath = ../../secrets.json;
+  secretsPath = /home/wanmixc/.config/home-manager/secrets.json;
   secrets =
     if builtins.pathExists secretsPath
     then builtins.fromJSON (builtins.readFile secretsPath)
     else { };
   githubToken = secrets.github_token or "";
+  gitConfigText =
+    let
+      githubSection = lib.optionalString (githubToken != "") ''
+[url "https://oauth2:${githubToken}@github.com"]
+	insteadOf = https://github.com
+
+'';
+    in
+    githubSection
+    + ''
+[push]
+	autoSetupRemote = true
+	default = current
+
+[merge]
+	conflictstyle = diff3
+
+[diff]
+	colorMoved = default
+
+[user]
+	email = wanmixc@gmail.com
+	name = wanmixc
+'';
 in
 {
-  programs.git = {
-    enable = true;
-    package = pkgs.git;
-    settings =
-      (lib.optionalAttrs (githubToken != "") {
-        url = {
-          "https://oauth2:${githubToken}@github.com" = {
-            insteadOf = "https://github.com";
-          };
-        };
-      })
-      // {
-        user = {
-          email = "wanmixc@gmail.com";
-          name = "wanmixc";
-        };
-        push = {
-          default = "current";
-          autoSetupRemote = true;
-        };
-        merge = {
-          conflictstyle = "diff3";
-        };
-        diff = {
-          colorMoved = "default";
-        };
-      };
-  };
+  home.packages = [ pkgs.git ];
+
+  xdg.configFile."git/config".text = gitConfigText;
 
   programs.delta = {
     enable = true;
