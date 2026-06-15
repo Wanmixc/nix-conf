@@ -9,6 +9,7 @@
 | `jj` | i | Exit insert mode |
 | `<leader>q` | n | Close buffer |
 | `<leader><leader>x` | n | Reload nvim config |
+| `<leader>go` | n | Go to last cursor position in file |
 | `:BufOnly` | cmd | Close all buffers except current |
 
 ---

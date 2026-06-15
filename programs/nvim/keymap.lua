@@ -21,6 +21,9 @@ vim.keymap.set("n", "<C-h>", ":vertical resize -2<CR>", { silent = true })
 -- reload config
 vim.keymap.set("n", "<leader><leader>x", ":source $MYVIMRC<CR>")
 
+-- go to last cursor position
+vim.keymap.set("n", "<leader>go", '`"', { silent = true })
+
 -- copy to clipboard
 vim.keymap.set({ "v", "n" }, "<leader>y", '"+y')
 vim.keymap.set("n", "<leader>Y", '"+yg_')

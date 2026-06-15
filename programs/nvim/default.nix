@@ -63,6 +63,8 @@ let
     nvim-treesitter
     nvim-treesitter-parsers
     ;
+
+  dotnetSdk = pkgs.dotnetCorePackages.sdk_10_0;
 in
 {
   xdg.configFile = {
@@ -99,6 +101,19 @@ in
     enable = true;
     viAlias = true;
     vimAlias = true;
+
+    extraPackages = with pkgs; [
+      typescript-language-server
+      typescript
+      roslyn-ls
+      dotnetSdk
+    ];
+
+    extraWrapperArgs = [
+      "--set"
+      "DOTNET_ROOT"
+      "${dotnetSdk}/share/dotnet"
+    ];
 
     # Load the visible ~/.config/nvim/init.lua so the repo folder is the
     # visible config folder remains the source of truth while plugins still

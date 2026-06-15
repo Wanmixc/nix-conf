@@ -109,6 +109,56 @@ local function setup(name, opts)
   pcall(vim.lsp.enable, name)
 end
 
+local function setup_roslyn_ls()
+  pcall(vim.lsp.config, "roslyn_ls", { capabilities = capabilities })
+
+  local function start_roslyn(bufnr)
+    if #vim.lsp.get_clients({ bufnr = bufnr, name = "roslyn_ls" }) > 0 then
+      return
+    end
+
+    local root_dir = vim.fs.root(bufnr, function(name)
+      return name:match("%.slnx?$") ~= nil or name:match("%.csproj$") ~= nil
+    end)
+    if not root_dir then
+      return
+    end
+
+    local config = vim.tbl_deep_extend("force", vim.deepcopy(vim.lsp.config.roslyn_ls), {
+      capabilities = capabilities,
+      root_dir = root_dir,
+    })
+
+    vim.api.nvim_buf_call(bufnr, function()
+      vim.lsp.start(config)
+    end)
+  end
+
+  vim.api.nvim_create_autocmd("FileType", {
+    pattern = "cs",
+    callback = function(args)
+      start_roslyn(args.buf)
+    end,
+  })
+
+  vim.api.nvim_create_autocmd({ "BufEnter", "BufReadPost" }, {
+    pattern = "*.cs",
+    callback = function(args)
+      start_roslyn(args.buf)
+    end,
+  })
+
+  vim.schedule(function()
+    for _, bufnr in ipairs(vim.api.nvim_list_bufs()) do
+      if vim.api.nvim_buf_is_loaded(bufnr) and vim.api.nvim_buf_get_name(bufnr):match("%.cs$") then
+        start_roslyn(bufnr)
+      end
+    end
+  end)
+end
+
+setup_roslyn_ls()
+
 setup("astro", {})
 setup("bashls", {})
 setup("clangd", {})
