@@ -220,6 +220,11 @@ in
   '';
 
   home.activation.codexPlugins = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
+    rm -rf \
+      "$HOME/plugins/supermemory/skills" \
+      "$HOME/.agents/plugins/plugins/supermemory/skills" \
+      "$HOME/.codex/plugins/cache/wanmixc-local/supermemory"
+
     while IFS= read -r src; do
       rel="''${src#${./codex/plugins}/}"
       install -Dm644 "$src" "$HOME/plugins/$rel"

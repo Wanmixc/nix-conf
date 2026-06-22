@@ -16,7 +16,6 @@
     "hooks",
     "productivity"
   ],
-  "skills": "./skills/",
   "interface": {
     "displayName": "Supermemory",
     "shortDescription": "Persistent memory across Codex sessions",
