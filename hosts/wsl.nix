@@ -7,6 +7,7 @@
     ../programs/starship.nix
     ../programs/xdg.nix
     ../programs/devtools.nix
+    ../programs/claude-code.nix
     ../programs/codex.nix
     ../programs/nvim.nix
     ../programs/tmux.nix
