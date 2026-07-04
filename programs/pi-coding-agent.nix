@@ -10,8 +10,8 @@ let
     name = "mimo";
     baseUrl = "https://mimo.lokerin.net/v1";
     api = "openai-completions";
-    modelId = "cutad-agent";
-    modelName = "Cutad Agent";
+    modelId = "cutad-agent-pro";
+    modelName = "Cutad Agent Pro";
   };
 
   # sha512 SRI integrity for the three @earendil-works workspace tarballs.
