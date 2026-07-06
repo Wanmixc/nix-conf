@@ -5,7 +5,6 @@
     ../programs/git.nix
     ../programs/fish.nix
     ../programs/starship.nix
-    ../programs/xdg.nix
     ../programs/devtools.nix
     ../programs/claude-code.nix
     ../programs/pi-coding-agent.nix
