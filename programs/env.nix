@@ -118,8 +118,8 @@ PY
         "$supermemory_fish" \
         "$supermemory_env"
 
-      if ${pkgs.tmux}/bin/tmux ls >/dev/null 2>&1; then
-        ${pkgs.tmux}/bin/tmux set-environment -g SUPERMEMORY_CODEX_API_KEY "$supermemory_codex_api_key"
+      if command -v tmux >/dev/null 2>&1 && tmux ls >/dev/null 2>&1; then
+        tmux set-environment -g SUPERMEMORY_CODEX_API_KEY "$supermemory_codex_api_key"
       fi
     else
       ${pkgs.coreutils}/bin/rm -f \
@@ -127,8 +127,8 @@ PY
         "$supermemory_fish" \
         "$supermemory_env"
 
-      if ${pkgs.tmux}/bin/tmux ls >/dev/null 2>&1; then
-        ${pkgs.tmux}/bin/tmux set-environment -gu SUPERMEMORY_CODEX_API_KEY || true
+      if command -v tmux >/dev/null 2>&1 && tmux ls >/dev/null 2>&1; then
+        tmux set-environment -gu SUPERMEMORY_CODEX_API_KEY || true
       fi
     fi
   '';

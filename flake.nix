@@ -6,9 +6,12 @@
 
     home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+
+    herdr.url = "github:ogulcancelik/herdr";
+    herdr.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { nixpkgs, home-manager, ... }:
+  outputs = { nixpkgs, home-manager, herdr, ... }:
     let
       system = "x86_64-linux";
       mkHome = module:
@@ -17,6 +20,8 @@
             inherit system;
             config.allowUnfree = true;
           };
+
+          extraSpecialArgs = { inherit herdr; };
 
           modules = [ module ];
         };
