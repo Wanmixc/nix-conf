@@ -10,7 +10,8 @@
     ../programs/codex.nix
     ../programs/desktop.nix
     ../programs/nvim.nix
-    ../programs/herdr.nix
+    ../programs/herdr
+    ../programs/herdr-plus.nix
     ../programs/yazi.nix
     ../programs/fastfetch.nix
     ../programs/rmpc.nix

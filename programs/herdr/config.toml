@@ -1,0 +1,88 @@
+# ============================================================
+#  herdr — terminal multiplexer
+#  Cheatsheet: docs/herdr-cheatsheet.md
+# ============================================================
+
+# --- General ------------------------------------------------
+onboarding = false          # skip first-run wizard
+
+[update]
+version_check = false       # no update checks on startup
+
+# --- Terminal behaviour -------------------------------------
+[terminal]
+shell_mode = "auto"         # auto-detect login shell
+new_cwd    = "follow"       # new panes/tabs inherit current cwd
+
+# ============================================================
+#  Keybindings                (prefix, then key — like tmux)
+# ============================================================
+[keys]
+prefix        = "ctrl+a"    # leader for every mapping below
+
+# --- Session ------------------------------------------------
+detach         = "prefix+q" # detach, leave session running
+reload_config  = "prefix+r" # reload this file
+toggle_sidebar = "prefix+b" # show/hide sidebar
+
+# --- Tabs ---------------------------------------------------
+new_tab    = "prefix+c"     # new tab
+switch_tab = "prefix+1..9"  # jump to tab N
+
+# --- Panes: split & close -----------------------------------
+split_vertical   = "prefix+|"      # split side by side
+split_horizontal = "prefix+minus"  # split stacked
+close_pane       = "prefix+x"      # close focused pane
+zoom             = "prefix+z"      # fullscreen toggle
+
+# --- Panes: focus            (vim h/j/k/l) ------------------
+focus_pane_left  = "prefix+h"
+focus_pane_down  = "prefix+j"
+focus_pane_up    = "prefix+k"
+focus_pane_right = "prefix+l"
+
+# --- Panes: navigate in-mode (no prefix, e.g. copy mode) ----
+navigate_pane_left  = "h"
+navigate_pane_down  = "j"
+navigate_pane_up    = "k"
+navigate_pane_right = "l"
+
+# --- Panes: swap             (prefix+SHIFT+hjkl) ------------
+swap_pane_left  = "prefix+shift+h"
+swap_pane_down  = "prefix+shift+j"
+swap_pane_up    = "prefix+shift+k"
+swap_pane_right = "prefix+shift+l"
+
+# --- Modes --------------------------------------------------
+resize_mode = "prefix+shift+r"     # enter resize mode
+copy_mode   = "prefix+["           # enter copy/scrollback
+
+# --- Plugins: herdr-plus ------------------------------------
+# Plugin actions use the [[keys.command]] form (type = plugin_action);
+# command is "<plugin-id>.<action-id>". Plugin installed declaratively
+# in programs/herdr-plus.nix. Must stay after the plain [keys] entries.
+[[keys.command]]
+key         = "prefix+p"
+type        = "plugin_action"
+command     = "cloudmanic.herdr-plus.projects"
+description = "Herdr Plus: Projects picker"
+
+# Uncomment to add a Quick Actions key too:
+# [[keys.command]]
+# key         = "prefix+shift+p"
+# type        = "plugin_action"
+# command     = "cloudmanic.herdr-plus.quick-actions"
+# description = "Herdr Plus: Quick Actions picker"
+
+# ============================================================
+#  Appearance
+# ============================================================
+[theme]
+name = "terminal"           # inherit terminal colors
+
+[ui]
+mouse_capture       = true  # mouse selects/focuses panes
+pane_borders        = true
+pane_gaps           = true
+confirm_close       = true  # ask before closing a pane
+prompt_new_tab_name = false # don't prompt for tab name

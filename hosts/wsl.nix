@@ -11,7 +11,8 @@
     ../programs/hermes.nix
     ../programs/codex.nix
     ../programs/nvim.nix
-    ../programs/tmux.nix
+    ../programs/herdr
+    ../programs/herdr-plus.nix
     ../programs/yazi.nix
     ../programs/fastfetch.nix
   ];
