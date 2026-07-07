@@ -78,7 +78,7 @@ description = "Herdr Plus: Projects picker"
 #  Appearance
 # ============================================================
 [theme]
-name = "terminal"           # inherit terminal colors
+name = "catppuccin"         # Catppuccin (dark); "catppuccin-latte" for light
 
 [ui]
 mouse_capture       = true  # mouse selects/focuses panes

@@ -191,7 +191,7 @@ PY
 
     [[tabs]]
     name = "dummy api"
-    command =  "~/Extra/Development/target/release; ./dummy_api"
+    command = "cd ~/Extra/Development/dummy_api/target/release; ./dummy_api"
 
     [[tabs]]
     name = "cheatsheet nvim"
