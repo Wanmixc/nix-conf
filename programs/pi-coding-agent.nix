@@ -2,18 +2,6 @@
 let
   version = "0.80.3";
 
-  # Custom OpenAI-compatible provider written to ~/.pi/agent/models.json on
-  # activation. The API key is read from the gitignored secrets.json (under
-  # `pi_api_key`) so it never lands in the Nix store or git.
-  secretsPath = "/home/wanmixc/configuration/secrets.json";
-  provider = {
-    name = "mimo";
-    baseUrl = "https://mimo.lokerin.net/v1";
-    api = "openai-completions";
-    modelId = "cutad-agent-pro";
-    modelName = "Cutad Agent Pro";
-  };
-
   # sha512 SRI integrity for the three @earendil-works workspace tarballs.
   # The published npm-shrinkwrap.json omits these, which breaks `npm ci`
   # under Nix. Values come from `npm view @earendil-works/<pkg>@<version>
@@ -78,42 +66,4 @@ let
 in
 {
   home.packages = [ pi-coding-agent ];
-
-  # Render ~/.pi/agent/models.json from secrets.json on every activation.
-  # Only models.json is written; auth.json (OAuth from `/login`) is left alone.
-  home.activation.piCodingAgentConfig = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    pi_agent_dir="$HOME/.pi/agent"
-    ${pkgs.coreutils}/bin/mkdir -p "$pi_agent_dir"
-
-    ${pkgs.python3}/bin/python3 - "${secretsPath}" "$pi_agent_dir/models.json" <<'PY'
-import json, os, sys
-
-secrets_path, models_path = sys.argv[1], sys.argv[2]
-
-try:
-    with open(secrets_path, encoding="utf-8") as f:
-        secrets = json.load(f)
-except (FileNotFoundError, json.JSONDecodeError):
-    secrets = {}
-
-api_key = secrets.get("pi_api_key", "")
-
-provider = {
-    "baseUrl": "${provider.baseUrl}",
-    "api": "${provider.api}",
-    "models": [
-        {"id": "${provider.modelId}", "name": "${provider.modelName}", "input": ["text"]}
-    ],
-}
-if isinstance(api_key, str) and api_key:
-    provider["apiKey"] = api_key
-
-with open(models_path, "w", encoding="utf-8") as f:
-    json.dump({"providers": {"${provider.name}": provider}}, f, indent=2)
-    f.write("\n")
-
-# The file embeds the API key, so keep it owner-only.
-os.chmod(models_path, 0o600)
-PY
-  '';
 }
