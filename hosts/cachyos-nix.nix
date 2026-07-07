@@ -15,7 +15,6 @@
     ../programs/fastfetch.nix
     ../programs/rmpc.nix
     ../programs/mpd.nix
-    ../programs/ollama.nix
     ../programs/claude-code.nix
   ];
 }
