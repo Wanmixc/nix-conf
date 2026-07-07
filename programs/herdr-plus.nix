@@ -130,6 +130,47 @@ PY
     command = "cd {{.WorkDir}} && exec $SHELL"
   '';
 
+  # Quick Action: restart the my_budget frontend/backend server panes. It
+  # targets the labels created by the my_budget project layout below.
+  xdg.configFile."herdr/plugins/config/${pluginId}/quick-actions/restart-my-budget-stack.toml".text = ''
+    name = "Restart my_budget stack"
+    description = "Restart pnpm dev and dotnet run panes"
+    type = "command"
+    command = """
+      ${pkgs.python3}/bin/python3 <<'PY'
+import json
+import subprocess
+import sys
+import time
+
+COMMANDS = {
+    "pnpm dev": "cd ~/Extra/Development/my_budget/frontend; direnv exec . pnpm dev",
+    "dotnet": "cd ~/Extra/Development/my_budget/backend; direnv exec . dotnet ef database update; dotnet build; dotnet run --urls http://localhost:5002",
+}
+
+pane_list = subprocess.check_output(["herdr", "pane", "list"], text=True)
+panes = json.loads(pane_list)["result"]["panes"]
+
+by_label = {pane.get("label"): pane["pane_id"] for pane in panes if pane.get("label") in COMMANDS}
+missing = [label for label in COMMANDS if label not in by_label]
+if missing:
+    print("Missing Herdr pane label(s): " + ", ".join(missing), file=sys.stderr)
+    print("Open the my_budget Herdr Plus project first.", file=sys.stderr)
+    sys.exit(1)
+
+for label, command in COMMANDS.items():
+    pane_id = by_label[label]
+    subprocess.run(["herdr", "pane", "send-keys", pane_id, "ctrl+c"], check=True)
+    time.sleep(0.5)
+    subprocess.run(["herdr", "pane", "send-keys", pane_id, "ctrl+u"], check=True)
+    subprocess.run(["herdr", "pane", "send-text", pane_id, command], check=True)
+    subprocess.run(["herdr", "pane", "send-keys", pane_id, "enter"], check=True)
+
+print("Restarted my_budget pnpm dev and dotnet panes.")
+PY
+    """
+  '';
+
   # Project: this nix configuration repo. Opens 3 tabs; the "edit" tab is split
   # into an editor pane + a file-tree pane. Rename/duplicate this file per
   # project. Schema fields:
@@ -137,8 +178,8 @@ PY
   #   working_dir                 — ~ and $VARS expand; cwd for every tab
   #   [[tabs]] name / command     — a tab; command runs on startup (omit = shell)
   #   [[tabs.panes]] label/command/split — split a tab; split = up|down|left|right
-  xdg.configFile."herdr/plugins/config/${pluginId}/projects/configuration.toml".text = ''
-    name = "Nix Config"
+  xdg.configFile."herdr/plugins/config/${pluginId}/projects/nix_config.toml".text = ''
+    name = "nix_config"
     description = "Nix home-manager config"
     group = "Dev"
     working_dir = "~/configuration"
@@ -150,7 +191,7 @@ PY
   # Project: my_budget — .NET backend + pnpm frontend monorepo (direnv/flake
   # dev shell). Server tabs use `direnv exec .` so pnpm/dotnet are on PATH even
   # though the tab command runs before the interactive direnv hook fires.
-  xdg.configFile."herdr/plugins/config/${pluginId}/projects/my-budget.toml".text = ''
+  xdg.configFile."herdr/plugins/config/${pluginId}/projects/my_budget.toml".text = ''
     name = "my_budget"
     description = "my budget project"
     group = "Dev"
@@ -197,4 +238,31 @@ PY
     name = "cheatsheet nvim"
     command = "bat ~/configuration/programs/nvim/CHEATSHEET.md"
   '';
+
+  xdg.configFile."herdr/plugins/config/${pluginId}/projects/dummy_api_project.toml".text = ''
+    name = "dummy_api_project"
+    description = "Dummy API Project"
+    group = "Dev"
+    working_dir = "~/Extra/Development/dummy_api"
+
+    [[tabs]]
+    name = "Nvim"
+    command = "nvim"
+
+    [[tabs]]
+    name = "Codex"
+    command = "codex"
+  '';
+
+  xdg.configFile."herdr/plugins/config/${pluginId}/projects/idea.toml".text = ''
+    name = "idea"
+    description = "Idea Project"
+    group = "Dev"
+    working_dir = "~/Extra/Development/dummy_api"
+
+    [[tabs]]
+    name = "Codex"
+    command = "codex"
+  '';
+
 }

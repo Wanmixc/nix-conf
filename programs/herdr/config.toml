@@ -68,11 +68,11 @@ command     = "cloudmanic.herdr-plus.projects"
 description = "Herdr Plus: Projects picker"
 
 # Uncomment to add a Quick Actions key too:
-# [[keys.command]]
-# key         = "prefix+shift+p"
-# type        = "plugin_action"
-# command     = "cloudmanic.herdr-plus.quick-actions"
-# description = "Herdr Plus: Quick Actions picker"
+[[keys.command]]
+key         = "prefix+shift+p"
+type        = "plugin_action"
+command     = "cloudmanic.herdr-plus.quick-actions"
+description = "Herdr Plus: Quick Actions picker"
 
 # ============================================================
 #  Appearance
