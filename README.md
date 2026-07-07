@@ -6,7 +6,7 @@ Personal multi-machine [Home Manager](https://nix-community.github.io/home-manag
 - `wsl`
 - `vps`
 
-This repository now uses a flat `programs/` layout so each app or concern is defined in one `.nix` file.
+This repository uses a mostly flat `programs/` layout: each app or concern has a small `.nix` module, with larger tools keeping their supporting config in a matching subdirectory.
 
 ## Host Targets
 
@@ -20,9 +20,10 @@ Available Home Manager flake targets:
 
 AI tool policy:
 
-- `cachyos-nix` -> `codex`
-- `wsl` -> `codex`
+- `cachyos-nix` -> `codex`, `claude-code`
+- `wsl` -> `codex`, `claude-code`, `pi-coding-agent`, `hermes`
 - `vps` -> `deepseek`
+- Claude Code is split into `programs/claude-code.nix` so it can be imported only on selected machines.
 
 Neovim policy:
 
@@ -48,14 +49,19 @@ Neovim policy:
 │   ├── xdg.nix
 │   ├── devtools.nix
 │   ├── desktop.nix
+│   ├── claude-code.nix
 │   ├── codex.nix
 │   ├── deepseek.nix
+│   ├── hermes.nix
+│   ├── pi-coding-agent.nix
+│   ├── herdr-plus.nix
 │   ├── nvim.nix
 │   ├── tmux.nix
 │   ├── yazi.nix
 │   ├── fastfetch.nix
 │   ├── rmpc.nix
 │   ├── mpd.nix
+│   ├── herdr/
 │   ├── nvim/
 │   ├── starship/
 │   ├── tmux/
@@ -75,15 +81,34 @@ If present, it may contain:
 ```json
 {
   "github_token": "your github token",
-  "github_ssh_key_path": "~/.ssh/id_ed25519"
+  "supermemory_codex_api_key": "your supermemory api key"
 }
 ```
 
-`github_token` is optional and enables authenticated GitHub HTTPS operations through a runtime credential helper. 
+`github_token` is optional and enables authenticated GitHub HTTPS operations through a runtime credential helper generated under `~/.config/runtime-env/github-credential-helper`.
 
-`github_ssh_key_path` is optional and defaults to `~/.ssh/id_ed25519`. Home Manager wires that key into the generated SSH config for `github.com`, so `git clone git@github.com:owner/repo.git` works after `switch` as long as the private key already exists on the machine and is registered in GitHub.
+`supermemory_codex_api_key` is optional and is written at activation time into runtime-only env files under `~/.config/runtime-env/`. Fish sources `supermemory.fish`; tmux also receives the variable when a tmux server is already running. This keeps the secret out of the Nix store.
 
 If the file is absent, the configuration still evaluates successfully.
+
+## Host Module Matrix
+
+Current machine-specific imports:
+
+```text
+cachyos-nix:
+  base env git fish starship xdg devtools codex desktop nvim herdr
+  herdr-plus yazi fastfetch rmpc mpd claude-code
+
+wsl:
+  base env git fish starship devtools claude-code pi-coding-agent hermes
+  codex nvim herdr herdr-plus yazi fastfetch
+
+vps:
+  base env git fish starship xdg devtools deepseek nvim tmux yazi fastfetch
+```
+
+To enable or disable a tool per machine, add or remove its module in the target file under `hosts/`.
 
 ## Usage
 
@@ -126,6 +151,9 @@ home-manager switch --flake .#wanmixc-vps
 
 ## Notes
 
-- `programs/tmux/tmux.nix` is preserved and imported through [programs/tmux.nix](/home/wanmixc/.config/home-manager/programs/tmux.nix).
-- Desktop-only integrations such as Edge and Codex Chrome DevTools MCP are only enabled on the desktop host.
-- DeepSeek is currently packaged through a binary release flow in [programs/deepseek.nix](/home/wanmixc/.config/home-manager/programs/deepseek.nix).
+- `programs/tmux/tmux.nix` is preserved and imported through [programs/tmux.nix](programs/tmux.nix). It is currently imported by the VPS profile.
+- Desktop-only integrations such as Edge and Codex Chrome DevTools MCP are enabled through [programs/desktop.nix](programs/desktop.nix) and currently imported by `cachyos-nix`.
+- DeepSeek is packaged through a binary release flow in [programs/deepseek.nix](programs/deepseek.nix) and currently imported by `vps`.
+- Claude Code is packaged in [programs/claude-code.nix](programs/claude-code.nix) by overriding `pkgs.claude-code` to the pinned upstream binary version.
+- Herdr itself is configured in [programs/herdr/default.nix](programs/herdr/default.nix), with raw TOML config in [programs/herdr/config.toml](programs/herdr/config.toml). Herdr Plus is installed and registered by [programs/herdr-plus.nix](programs/herdr-plus.nix).
+- Hermes Agent is imported from its upstream flake by [programs/hermes.nix](programs/hermes.nix).
