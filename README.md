@@ -96,7 +96,7 @@ If the file is absent, the configuration still evaluates successfully.
 
 ## Paste Commands
 
-Fish provides two paste API helpers:
+Fish provides paste API helpers:
 
 ```fish
 wan-copy "hello from paste api"
@@ -186,5 +186,6 @@ home-manager switch --flake .#wanmixc-vps
 - Desktop-only integrations such as Edge and Codex Chrome DevTools MCP are enabled through [programs/desktop.nix](programs/desktop.nix) and currently imported by `cachyos-nix`.
 - DeepSeek is packaged through a binary release flow in [programs/deepseek.nix](programs/deepseek.nix) and currently imported by `vps`.
 - Claude Code is packaged in [programs/claude-code.nix](programs/claude-code.nix) by overriding `pkgs.claude-code` to the pinned upstream binary version.
-- Herdr itself is configured in [programs/herdr/default.nix](programs/herdr/default.nix), with raw TOML config in [programs/herdr/config.toml](programs/herdr/config.toml). Herdr Plus is installed and registered by [programs/herdr-plus.nix](programs/herdr-plus.nix).
+- Herdr itself is configured in [programs/herdr/default.nix](programs/herdr/default.nix), with raw TOML config in [programs/herdr/config.toml](programs/herdr/config.toml). Herdr and Herdr Plus are imported by `cachyos-nix` and `wsl`, not by `vps`.
+- Herdr Plus is installed and registered by [programs/herdr-plus.nix](programs/herdr-plus.nix).
 - Hermes Agent is imported from its upstream flake by [programs/hermes.nix](programs/hermes.nix).
