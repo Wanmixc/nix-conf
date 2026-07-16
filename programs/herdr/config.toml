@@ -32,7 +32,6 @@ switch_tab = "prefix+1..9"  # jump to tab N
 # --- Panes: split & close -----------------------------------
 split_vertical   = "prefix+|"      # split side by side
 split_horizontal = "prefix+minus"  # split stacked
-close_pane       = "prefix+x"      # close focused pane
 zoom             = "prefix+z"      # fullscreen toggle
 
 # --- Panes: focus            (vim h/j/k/l) ------------------
@@ -69,7 +68,7 @@ description = "Herdr Plus: Projects picker"
 
 # Uncomment to add a Quick Actions key too:
 [[keys.command]]
-key         = "prefix+shift+p"
+key         = "prefix+x"
 type        = "plugin_action"
 command     = "cloudmanic.herdr-plus.quick-actions"
 description = "Herdr Plus: Quick Actions picker"
