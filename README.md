@@ -34,7 +34,9 @@ Neovim policy:
 
 ```text
 .
+├── .gitignore
 ├── flake.nix
+├── flake.lock
 ├── home.nix
 ├── hosts/
 │   ├── cachyos-nix.nix
@@ -55,6 +57,7 @@ Neovim policy:
 │   ├── hermes.nix
 │   ├── pi-coding-agent.nix
 │   ├── herdr-plus.nix
+│   ├── ollama.nix
 │   ├── nvim.nix
 │   ├── tmux.nix
 │   ├── yazi.nix
@@ -63,18 +66,23 @@ Neovim policy:
 │   ├── mpd.nix
 │   ├── herdr/
 │   ├── nvim/
+│   │   ├── config/
+│   │   └── keymapconfig/
 │   ├── starship/
 │   ├── tmux/
 │   ├── fastfetch/
 │   ├── rmpc/
 │   ├── codex/
+│   │   ├── plugins/
+│   │   └── skills/
 │   └── deepseek/
-└── secrets.json
+│       └── skills/
+└── secrets.json  # local only, ignored by git
 ```
 
 ## Secrets
 
-`secrets.json` is optional.
+`secrets.json` is optional, local-only, and ignored by git. The current runtime generator reads it from `/home/wanmixc/configuration/secrets.json`.
 
 If present, it may contain:
 
