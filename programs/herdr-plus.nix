@@ -258,11 +258,11 @@ PY
     name = "idea"
     description = "Idea Project"
     group = "Dev"
-    working_dir = "~/Extra/Development/dummy_api"
+    working_dir = "~/Extra/Development/idea"
 
     [[tabs]]
-    name = "Codex"
-    command = "codex"
+    name = "Claude"
+    command = "claude"
   '';
 
 }
