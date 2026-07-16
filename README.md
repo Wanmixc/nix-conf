@@ -100,10 +100,17 @@ Fish provides two paste API helpers:
 
 ```fish
 wan-copy "hello from paste api"
+wan-copy file.txt
+wc file.txt
 wan-paste aB3xZ
+wan-paste aB3xZ output.txt
+wp aB3xZ output.txt
+wan-del-paste aB3xZ
 ```
 
-`wan-copy` creates a paste and prints the returned 5-character ID. `wan-paste` fetches a paste by ID and prints its content.
+`wan-copy` creates a paste and prints the returned 5-character ID. If the command receives one argument and it is a readable file, it sends that file's content. `wan-paste` fetches a paste by ID and prints its content, or writes it to the provided output file. If the output file already exists, `wan-paste` writes to the next available name such as `output-1.txt` or `output-2.txt` instead of overwriting. `wan-del-paste` deletes a paste by ID. Fish abbreviations expand `wc` to `wan-copy` and `wp` to `wan-paste` while typing.
+
+File pastes preserve multiline content. Empty or whitespace-only files are rejected before upload, and API validation failures are printed with their HTTP status and response message.
 
 The commands read the API base URL from `paste_api_url` in `secrets.json`:
 

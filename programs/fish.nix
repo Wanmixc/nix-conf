@@ -37,6 +37,11 @@
       wsl-nix = "home-manager switch --impure --flake .#wanmixc-wsl";
     };
 
+    shellAbbrs = {
+      wc = "wan-copy";
+      wp = "wan-paste";
+    };
+
     functions = {
       fish_user_key_bindings = {
         body = ''
@@ -113,6 +118,36 @@
         '';
       };
 
+      __wan_paste_unique_output_path = {
+        body = ''
+          set -l requested "$argv[1]"
+          if not test -e "$requested"
+            printf '%s\n' "$requested"
+            return 0
+          end
+
+          set -l dir (dirname -- "$requested")
+          set -l name (basename -- "$requested")
+          set -l stem "$name"
+          set -l ext
+
+          if string match -qr '^.+\.[^/]+$' -- "$name"
+            set stem (string replace -r '\.[^.]+$' "" -- "$name")
+            set ext (string match -r '\.[^.]+$' -- "$name")
+          end
+
+          set -l i 1
+          while true
+            set -l candidate "$dir/$stem-$i$ext"
+            if not test -e "$candidate"
+              printf '%s\n' "$candidate"
+              return 0
+            end
+            set i (math $i + 1)
+          end
+        '';
+      };
+
       wan-copy = {
         body = ''
           if not __wan_paste_require_url
@@ -125,14 +160,42 @@
           end
 
           set -l paste_url (string trim --right --chars=/ -- "$WAN_PASTE_URL")
-          set -l content (string join ' ' -- $argv)
-          set -l payload (jq -cn --arg content "$content" '{content: $content}')
-          set -l response (curl -fsS -X POST "$paste_url/api/pastes" -H 'content-type: application/json' -d "$payload")
+          set -l payload
+          if test (count $argv) -eq 1; and test -f "$argv[1]"
+            if not test -r "$argv[1]"
+              echo "wan-copy: cannot read file: $argv[1]" >&2
+              return 1
+            end
+
+            if not cat -- "$argv[1]" | string collect | string trim | string length --quiet
+              echo "wan-copy: file content is empty: $argv[1]" >&2
+              return 1
+            end
+
+            set payload (jq -cn --rawfile content "$argv[1]" '{content: $content}')
+          else
+            set -l content (string join ' ' -- $argv)
+            set payload (jq -cn --arg content "$content" '{content: $content}')
+          end
+
+          set -l response_file (mktemp)
+          set -l http_code (curl -sS -o "$response_file" -w '%{http_code}' -X POST "$paste_url/api/pastes" -H 'content-type: application/json' -d "$payload")
           if test $status -ne 0
+            rm -f -- "$response_file"
             return 1
           end
 
-          set -l id (printf '%s' "$response" | jq -r '.id // empty')
+          set -l response (cat -- "$response_file")
+          rm -f -- "$response_file"
+
+          if not string match -qr '^2' -- "$http_code"
+            echo "wan-copy: create failed with HTTP $http_code" >&2
+            printf '%s\n' "$response" | jq -r '.errors[]? // .description? // empty' 2>/dev/null >&2
+            or printf '%s\n' "$response" >&2
+            return 1
+          end
+
+          set -l id (printf '%s' "$response" | jq -r '.data.id // .id // empty')
           if test -z "$id"
             echo 'wan-copy: create response did not include an id' >&2
             printf '%s\n' "$response" >&2
@@ -149,8 +212,8 @@
             return 1
           end
 
-          if test (count $argv) -ne 1
-            echo 'usage: wan-paste <id>' >&2
+          if test (count $argv) -lt 1; or test (count $argv) -gt 2
+            echo 'usage: wan-paste <id> [output-file]' >&2
             return 1
           end
 
@@ -160,15 +223,49 @@
             return 1
           end
 
-          printf '%s' "$response" | jq -e 'has("content")' >/dev/null
+          printf '%s' "$response" | jq -e '((.data | type) == "object" and (.data | has("content"))) or has("content")' >/dev/null
           if test $status -ne 0
             echo 'wan-paste: get response did not include content' >&2
             printf '%s\n' "$response" >&2
             return 1
           end
 
-          set -l content (printf '%s' "$response" | jq -r '.content')
-          printf '%s\n' "$content"
+          set -l content_filter 'if (.data | type) == "object" and (.data | has("content")) then .data.content elif has("content") then .content else empty end'
+          if test (count $argv) -eq 2
+            set -l output_path (__wan_paste_unique_output_path "$argv[2]")
+            printf '%s' "$response" | jq -rj "$content_filter" > "$output_path"
+            if test $status -ne 0
+              echo "wan-paste: cannot write file: $output_path" >&2
+              return 1
+            end
+
+            printf 'wrote %s\n' "$output_path"
+            return 0
+          end
+
+          printf '%s' "$response" | jq -rj "$content_filter"
+          printf '\n'
+        '';
+      };
+
+      wan-del-paste = {
+        body = ''
+          if not __wan_paste_require_url
+            return 1
+          end
+
+          if test (count $argv) -ne 1
+            echo 'usage: wan-del-paste <id>' >&2
+            return 1
+          end
+
+          set -l paste_url (string trim --right --chars=/ -- "$WAN_PASTE_URL")
+          curl -fsS -X DELETE "$paste_url/api/pastes/$argv[1]" >/dev/null
+          if test $status -ne 0
+            return 1
+          end
+
+          printf 'deleted %s\n' "$argv[1]"
         '';
       };
     };
