@@ -11,6 +11,7 @@
     atac
     bubblewrap
     fzf
+    jq
     speedtest-cli
   ];
 

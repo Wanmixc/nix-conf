@@ -10,6 +10,7 @@ in
   home.activation.supermemoryRuntimeEnv = ''
     runtime_env_dir="$HOME/.config/runtime-env"
     github_helper="$runtime_env_dir/github-credential-helper"
+    paste_fish="$runtime_env_dir/paste.fish"
     supermemory_sh="$runtime_env_dir/supermemory.sh"
     supermemory_fish="$runtime_env_dir/supermemory.fish"
     supermemory_env="$runtime_env_dir/supermemory.env"
@@ -71,6 +72,44 @@ INNER_PY
 PY
 
     ${pkgs.coreutils}/bin/chmod 700 "$github_helper"
+
+    paste_api_url="$(${pkgs.python3}/bin/python3 -c '
+import json
+import sys
+
+try:
+    with open(sys.argv[1], "r", encoding="utf-8") as f:
+        data = json.load(f)
+except FileNotFoundError:
+    print("")
+    raise SystemExit(0)
+
+value = data.get("paste_api_url", "")
+if isinstance(value, str):
+    print(value)
+else:
+    print("")
+' ${secretsPath})"
+
+    if [ -n "$paste_api_url" ]; then
+      ${pkgs.python3}/bin/python3 - "$runtime_env_dir" "$paste_api_url" <<'PY'
+import pathlib
+import shlex
+import sys
+
+runtime_env_dir = pathlib.Path(sys.argv[1])
+url = sys.argv[2]
+
+(runtime_env_dir / "paste.fish").write_text(
+    "set -gx WAN_PASTE_URL %s\n" % shlex.quote(url),
+    encoding="utf-8",
+)
+PY
+
+      ${pkgs.coreutils}/bin/chmod 600 "$paste_fish"
+    else
+      ${pkgs.coreutils}/bin/rm -f "$paste_fish"
+    fi
 
     supermemory_codex_api_key="$(${pkgs.python3}/bin/python3 -c '
 import json
@@ -134,6 +173,10 @@ PY
   '';
 
   programs.fish.shellInit = ''
+    if test -f "$HOME/.config/runtime-env/paste.fish"
+      source "$HOME/.config/runtime-env/paste.fish"
+    end
+
     if test -f "$HOME/.config/runtime-env/supermemory.fish"
       source "$HOME/.config/runtime-env/supermemory.fish"
     end

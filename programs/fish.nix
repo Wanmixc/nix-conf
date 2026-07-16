@@ -103,6 +103,74 @@
           commandline -f repaint
         '';
       };
+
+      __wan_paste_require_url = {
+        body = ''
+          if not set -q WAN_PASTE_URL; or test -z "$WAN_PASTE_URL"
+            echo 'WAN_PASTE_URL is not configured. Add "paste_api_url" to secrets.json and run home-manager switch.' >&2
+            return 1
+          end
+        '';
+      };
+
+      wan-copy = {
+        body = ''
+          if not __wan_paste_require_url
+            return 1
+          end
+
+          if test (count $argv) -eq 0
+            echo 'usage: wan-copy "text to paste"' >&2
+            return 1
+          end
+
+          set -l paste_url (string trim --right --chars=/ -- "$WAN_PASTE_URL")
+          set -l content (string join ' ' -- $argv)
+          set -l payload (jq -cn --arg content "$content" '{content: $content}')
+          set -l response (curl -fsS -X POST "$paste_url/api/pastes" -H 'content-type: application/json' -d "$payload")
+          if test $status -ne 0
+            return 1
+          end
+
+          set -l id (printf '%s' "$response" | jq -r '.id // empty')
+          if test -z "$id"
+            echo 'wan-copy: create response did not include an id' >&2
+            printf '%s\n' "$response" >&2
+            return 1
+          end
+
+          printf '%s\n' "$id"
+        '';
+      };
+
+      wan-paste = {
+        body = ''
+          if not __wan_paste_require_url
+            return 1
+          end
+
+          if test (count $argv) -ne 1
+            echo 'usage: wan-paste <id>' >&2
+            return 1
+          end
+
+          set -l paste_url (string trim --right --chars=/ -- "$WAN_PASTE_URL")
+          set -l response (curl -fsS "$paste_url/api/pastes/$argv[1]")
+          if test $status -ne 0
+            return 1
+          end
+
+          printf '%s' "$response" | jq -e 'has("content")' >/dev/null
+          if test $status -ne 0
+            echo 'wan-paste: get response did not include content' >&2
+            printf '%s\n' "$response" >&2
+            return 1
+          end
+
+          set -l content (printf '%s' "$response" | jq -r '.content')
+          printf '%s\n' "$content"
+        '';
+      };
     };
   };
 }

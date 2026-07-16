@@ -81,15 +81,39 @@ If present, it may contain:
 ```json
 {
   "github_token": "your github token",
+  "paste_api_url": "https://your paste api domain",
   "supermemory_codex_api_key": "your supermemory api key"
 }
 ```
 
 `github_token` is optional and enables authenticated GitHub HTTPS operations through a runtime credential helper generated under `~/.config/runtime-env/github-credential-helper`.
 
+`paste_api_url` is optional and is written at activation time to `~/.config/runtime-env/paste.fish` as `WAN_PASTE_URL`. The `wan-copy` and `wan-paste` Fish functions require it and will print a warning if it is not configured.
+
 `supermemory_codex_api_key` is optional and is written at activation time into runtime-only env files under `~/.config/runtime-env/`. Fish sources `supermemory.fish`; tmux also receives the variable when a tmux server is already running. This keeps the secret out of the Nix store.
 
 If the file is absent, the configuration still evaluates successfully.
+
+## Paste Commands
+
+Fish provides two paste API helpers:
+
+```fish
+wan-copy "hello from paste api"
+wan-paste aB3xZ
+```
+
+`wan-copy` creates a paste and prints the returned 5-character ID. `wan-paste` fetches a paste by ID and prints its content.
+
+The commands read the API base URL from `paste_api_url` in `secrets.json`:
+
+```json
+{
+  "paste_api_url": "https://your paste api domain"
+}
+```
+
+After changing `secrets.json`, run `home-manager switch` for the target machine and open a new Fish shell. If `paste_api_url` is missing, both commands exit with a warning instead of using a fallback URL.
 
 ## Host Module Matrix
 
