@@ -5,11 +5,12 @@
     ../programs/git.nix
     ../programs/fish.nix
     ../programs/starship.nix
-    ../programs/xdg.nix
     ../programs/devtools.nix
-    ../programs/deepseek.nix
+    ../programs/claude-code.nix
+    ../programs/pi-coding-agent.nix
     ../programs/nvim.nix
-    ../programs/tmux.nix
+    ../programs/herdr
+    ../programs/herdr-plus.nix
     ../programs/yazi.nix
     ../programs/fastfetch.nix
   ];
