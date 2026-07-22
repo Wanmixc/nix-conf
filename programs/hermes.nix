@@ -14,10 +14,10 @@ let
   #   messaging— minimal + discord/telegram/slack preinstalled.
   #   tui / web / desktop — the respective front-ends.
   #
-  # We use `minimal` to keep the build light; switch to `.default` for the
-  # batteries-included variant, or `.messaging` if you want the chat gateways
-  # baked in (lazy-install can't write to /nix/store).
-  hermes = inputs.hermes-agent.packages.${system}.minimal;
+  # Use the messaging variant so gateway dependencies (including Telegram)
+  # are available in the immutable Nix environment. The minimal variant cannot
+  # lazy-install them because its Python environment lives in /nix/store.
+  hermes = inputs.hermes-agent.packages.${system}.messaging;
 in
 {
   home.packages = [ hermes ];
