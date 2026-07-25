@@ -13,6 +13,7 @@
     fzf
     jq
     speedtest-cli
+    python3
   ];
 
   programs.direnv.enable = true;
