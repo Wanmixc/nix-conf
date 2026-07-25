@@ -1,4 +1,4 @@
-{ inputs, system, ... }:
+{ inputs, system, pkgs, ... }:
 let
   # Hermes Agent — "the agent that grows with you" by Nous Research.
   # https://github.com/NousResearch/hermes-agent
@@ -18,7 +18,19 @@ let
   # are available in the immutable Nix environment. The minimal variant cannot
   # lazy-install them because its Python environment lives in /nix/store.
   hermes = inputs.hermes-agent.packages.${system}.messaging;
+  pythonWithPip = pkgs.python3.withPackages (ps: [ ps.pip ]);
+
+  hermes-wrapped = pkgs.writeShellScriptBin "hermes" ''
+    HERMES_PKGS="$HOME/.local/share/hermes/packages"
+    mkdir -p "$HERMES_PKGS"
+    ${pythonWithPip}/bin/python3 -m pip install \
+      --target "$HERMES_PKGS" \
+      "anthropic>=0.39.0" \
+      --quiet --no-input 2>/dev/null || true
+    export PYTHONPATH="$HERMES_PKGS''${PYTHONPATH:+:$PYTHONPATH}"
+    exec ${hermes}/bin/hermes "$@"
+  '';
 in
 {
-  home.packages = [ hermes ];
+  home.packages = [ hermes-wrapped ];
 }
