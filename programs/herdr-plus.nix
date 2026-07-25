@@ -205,7 +205,6 @@ PY
     name = "editor BE"
     command = "cd backend; nvim"
 
-    # Dedicated servers tab: frontend dev server + backend split beside it.
     [[tabs]]
     name = "servers"
 
@@ -232,7 +231,15 @@ PY
 
     [[tabs]]
     name = "dummy api"
+
+    [[tabs.panes]]
+    label = "dummy api"
     command = "cd ~/Extra/Development/dummy_api/target/release; ./dummy_api"
+
+    [[tabs.panes]]
+    label = "pg local"
+    command = "cd ~/Extra/Development/dummy_api; pg-start"
+    split = "right"
 
     [[tabs]]
     name = "cheatsheet nvim"
