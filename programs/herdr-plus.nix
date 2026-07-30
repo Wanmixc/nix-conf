@@ -272,4 +272,14 @@ PY
     command = "claude"
   '';
 
+  xdg.configFile."herdr/plugins/config/${pluginId}/projects/hermes.toml".text = ''
+    name = "hermes"
+    description = "Hermes"
+    group = "Dev"
+    working_dir = "~/"
+
+    [[tabs]]
+    name = "Hermes"
+    command = "hermes"
+  '';
 }
