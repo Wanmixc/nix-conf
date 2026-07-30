@@ -52,7 +52,7 @@ let
 
       function flush_features() {
         if (in_features && !features_hooks_written) {
-          print "hooks = true"
+          print "hooks = false"
         }
       }
 
@@ -89,7 +89,7 @@ let
         if (in_features) {
           if ($0 ~ /^codex_hooks = / || $0 ~ /^hooks = /) {
             if (!features_hooks_written) {
-              print "hooks = true"
+              print "hooks = false"
               features_hooks_written = 1
             }
             next
@@ -116,7 +116,7 @@ let
         if (!features_seen) {
           print ""
           print "[features]"
-          print "hooks = true"
+          print "hooks = false"
         }
 
         if (!plugin_seen) {
