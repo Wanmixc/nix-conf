@@ -2,11 +2,11 @@
 let
   codexPkg = pkgs.stdenvNoCC.mkDerivation {
     pname = "codex";
-    version = "0.146.0";
+    version = "0.141.0";
 
     src = pkgs.fetchurl {
-      url = "https://github.com/openai/codex/releases/download/rust-v0.146.0/codex-x86_64-unknown-linux-musl.tar.gz";
-      sha256 = "sha256-W6O5QFVDlTCB9mHQhU0mb3biq75R1BNJNVo23nZzd2o=";
+      url = "https://github.com/openai/codex/releases/download/rust-v0.141.0/codex-x86_64-unknown-linux-musl.tar.gz";
+      sha256 = "sha256-8eK/n6C6brghGdYhtrcbw47dM8BtwoZ7MaAnBSNYlX0=";
     };
 
     nativeBuildInputs = [
