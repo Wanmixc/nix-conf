@@ -1,0 +1,8 @@
+{
+  "name": "wanmixc-notion-mcp",
+  "private": true,
+  "version": "2.5.0",
+  "dependencies": {
+    "@notionhq/notion-mcp-server": "2.5.0"
+  }
+}

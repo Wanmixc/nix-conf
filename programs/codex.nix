@@ -1,12 +1,14 @@
 { pkgs, lib, ... }:
 let
+  secretsPath = "/home/wanmixc/configuration/secrets.json";
+
   codexPkg = pkgs.stdenvNoCC.mkDerivation {
     pname = "codex";
-    version = "0.141.0";
+    version = "0.146.0";
 
     src = pkgs.fetchurl {
-      url = "https://github.com/openai/codex/releases/download/rust-v0.141.0/codex-x86_64-unknown-linux-musl.tar.gz";
-      sha256 = "sha256-8eK/n6C6brghGdYhtrcbw47dM8BtwoZ7MaAnBSNYlX0=";
+      url = "https://github.com/openai/codex/releases/download/rust-v0.146.0/codex-x86_64-unknown-linux-musl.tar.gz";
+      sha256 = "sha256-W6O5QFVDlTCB9mHQhU0mb3biq75R1BNJNVo23nZzd2o=";
     };
 
     nativeBuildInputs = [
@@ -163,6 +165,21 @@ let
     '';
   };
 
+  notionMcpPkg = pkgs.callPackage ./codex/notion-mcp-server.nix { };
+
+  notionMcpWrapper = pkgs.writeShellScriptBin "notion-mcp-server" ''
+    set -euo pipefail
+
+    token_file="$HOME/.config/runtime-env/notion-token"
+    if [ ! -s "$token_file" ]; then
+      echo "Notion token is missing. Run Home Manager after setting notion_token in ${secretsPath}." >&2
+      exit 1
+    fi
+
+    export NOTION_TOKEN="$(${pkgs.coreutils}/bin/cat "$token_file")"
+    exec ${notionMcpPkg}/bin/notion-mcp-server "$@"
+  '';
+
   codexPluginsMarketplace = builtins.toFile "codex-marketplace.json" ''
     {
       "name": "wanmixc-local",
@@ -204,11 +221,21 @@ in
   home.packages = with pkgs; [
     codexPkg
     codexSupermemoryPkg
+    notionMcpWrapper
     bash-language-server
     bun
     gitui
     nodejs
   ];
+
+  home.file.".codex/AGENTS.md" = {
+    source = ./codex/AGENTS.md;
+    force = true;
+  };
+
+  home.activation.validateNotionToken = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
+    ${pkgs.python3}/bin/python3 ${./codex/notion_token.py} check ${secretsPath}
+  '';
 
   home.activation.codexSkills = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
     while IFS= read -r src; do
@@ -257,5 +284,16 @@ in
     if [ -f "$config_file" ]; then
       ${ensureSupermemoryConfigScript} "$config_file"
     fi
+  '';
+
+  home.activation.codexNotion = lib.hm.dag.entryAfter [ "codexSupermemory" ] ''
+    runtime_env_dir="$HOME/.config/runtime-env"
+    token_file="$runtime_env_dir/notion-token"
+    config_file="$HOME/.codex/config.toml"
+
+    ${pkgs.python3}/bin/python3 ${./codex/notion_token.py} write ${secretsPath} "$token_file"
+    ${pkgs.python3}/bin/python3 ${./codex/reconcile_notion_config.py} \
+      "$config_file" \
+      "${notionMcpWrapper}/bin/notion-mcp-server"
   '';
 }

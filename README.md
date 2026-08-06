@@ -89,6 +89,7 @@ If present, it may contain:
 ```json
 {
   "github_token": "your github token",
+  "notion_token": "your Notion integration token",
   "paste_api_url": "https://your paste api domain",
   "supermemory_codex_api_key": "your supermemory api key"
 }
@@ -96,11 +97,13 @@ If present, it may contain:
 
 `github_token` is optional and enables authenticated GitHub HTTPS operations through a runtime credential helper generated under `~/.config/runtime-env/github-credential-helper`.
 
+`notion_token` is required for machines that import `programs/codex.nix`. Home Manager validates that it is a non-empty string before making changes, writes it at activation time to the mode-`0600` file `~/.config/runtime-env/notion-token`, and configures Codex with the managed `notion-api` MCP server. The token is not written to the Nix store or `~/.codex/config.toml`.
+
 `paste_api_url` is optional and is written at activation time to `~/.config/runtime-env/paste.fish` as `WAN_PASTE_URL`. The `wan-copy` and `wan-paste` Fish functions require it and will print a warning if it is not configured.
 
 `supermemory_codex_api_key` is optional and is written at activation time into runtime-only env files under `~/.config/runtime-env/`. Fish sources `supermemory.fish`; tmux also receives the variable when a tmux server is already running. This keeps the secret out of the Nix store.
 
-If the file is absent, the configuration still evaluates successfully.
+If the file is absent, the configuration still evaluates successfully. A Home Manager switch for a machine with Codex fails before the write boundary when `notion_token` is absent or empty.
 
 ## Paste Commands
 

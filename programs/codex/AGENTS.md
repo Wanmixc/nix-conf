@@ -65,10 +65,11 @@ Read only the documents needed for the task:
 ## Notion tasks
 
 - Use the `notion-api` MCP server for my Notion tasks.
-- The canonical Tasks data source ID is `6913a6c5-de6f-8214-aced-87a426c716bc`.
-- Do not use the older Tasks data source `2693a6c5-de6f-81c9-b948-000b2f6b69f0` unless I explicitly request older tasks.
-- "Unfinished tasks" means Status is neither `Done` nor `Archived`.
-- Return Task name, Status, Due, Priority, Work By, and the page URL.
-- Paginate until all matching tasks are retrieved.
+- "Unfinished tasks" means Status is neither `Done` or `Archived`.
+- Use work tree to show data for easy read, task actually inside page so i will explain
+  for MyBudget -> Project |-> this is task -> this can task too
+                          |-> this is task -> this can task too.
+- show too page doenst have task inside the page.
+- show like work tree all task not done & show page have task & not task
 - Never modify a Notion task unless I explicitly request it.
 - If the canonical ID stops working, search `notion-api` for a non-archived data source titled `Tasks`, verify its schema, and report the replacement before using it.

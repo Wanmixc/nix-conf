@@ -1,2 +1,3 @@
 secrets.json
 /programs/TabNine
+__pycache__/
