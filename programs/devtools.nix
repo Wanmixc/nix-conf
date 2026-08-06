@@ -14,6 +14,7 @@
     jq
     speedtest-cli
     python3
+    croc
   ];
 
   programs.direnv.enable = true;
