@@ -8,7 +8,6 @@
     ../programs/devtools.nix
     ../programs/claude-code.nix
     ../programs/pi-coding-agent.nix
-    ../programs/hermes.nix
     ../programs/codex.nix
     ../programs/nvim.nix
     ../programs/herdr
