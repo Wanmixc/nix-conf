@@ -4,6 +4,10 @@
     enable = true;
 
     interactiveShellInit = ''
+      fish_add_path /nix/var/nix/profiles/default/bin
+      fish_add_path ~/.nix-profile/bin
+      fish_add_path ~/.local/state/nix/profiles/profile/bin
+
       set fish_cursor_default block
       set fish_cursor_insert line
       set fish_cursor_replace_one underscore
@@ -35,6 +39,7 @@
       h = "hyprland";
       cachy-nix = "home-manager switch --impure --flake .#wanmixc-cachyos-nix";
       wsl-nix = "home-manager switch --impure --flake .#wanmixc-wsl";
+      vps-nix = "home-manager switch --impure --flake .#wanmixc-vps";
     };
 
     shellAbbrs = {
