@@ -1,20 +1,23 @@
 { pkgs, lib, ... }:
 let
-  version = "0.80.3";
+  version = "0.84.1";
 
-  # sha512 SRI integrity for the three @earendil-works workspace tarballs.
+  # sha512 SRI integrity for @earendil-works workspace tarballs.
   # The published npm-shrinkwrap.json omits these, which breaks `npm ci`
   # under Nix. Values come from `npm view @earendil-works/<pkg>@<version>
   # dist.integrity` and must be refreshed together with `version`.
   workspaceIntegrity = {
-    pi-ai = "sha512-jPZLMeGL5kkMSEAwAklfXTMHqZvfhsJtCCpKGIr5Duk7mc0n4skjB1dugk7y0z3z8ZHIUCmPAWHdyDqgUz5vdA==";
-    pi-agent-core = "sha512-3qw0/GeRQBU/nlGjDe5Yb7ePKTmoxefx2YxyKMFAviFUMXpFexBG/hS7mBtwFahFvzrrTPPoRT6sFIDjwoDWPQ==";
-    pi-tui = "sha512-2BJI6qwRQfnM0Q7seL1+SbacU/jRRjBnN7Hu3n9BjAn7/s5FaBNnvdD1qBQYRsFTHfjqMaDsjYqanPyqwXj99w==";
+    pi-ai = "sha512-wMsAdJMxuNri08vLqTyYVI201DQQezGhPSTkzYsHdw5dYX3rCNwEmSvpaAwhi7ELKI/2tE/CEgSWg/6iRxSgdQ==";
+    pi-agent-core = "sha512-evyzXYWCLQGmcaBYHlmSku02r8qoN4SGI60GZABo6iV+H+nqX+P9ud8fEZ4GmRq9mUSREvvfX+w9dA9ThF9C6w==";
+    pi-client = "sha512-/V5hGHE4Zq+jG0GtwIB9PyBUOGd6gBLZ7lkQYFKchKnxYHeH3rmWC5xw4kpnZKKBuBuFTdLVbU9vEjlAGMMb2A==";
+    pi-protocol = "sha512-Ox1pciyeSPGEEUcxvR0/dJcrY7C6hrEGA8y71rOsvSIUlXN1Cbp/be/eoL71OGDBk5O97TeQPfWN6Ju/2Ehjww==";
+    pi-telemetry = "sha512-180/xGJtsq7IoR3p9EKWjRd0e9M4DkxInhlo9xyD7prDC7Qrhqq+nhvwrW0lFjPfXcEI2FSHmGCSyvSJE9GsaQ==";
+    pi-tui = "sha512-udeXFbgEhJ6JiB0uguwNVNkDy2FENfmtQwPcY+/iJ8GWeq18wkal1tKqa5YyeH0IqtX1vG0cGh8zfSYzyzVuLA==";
   };
 
   rawSrc = pkgs.fetchurl {
     url = "https://registry.npmjs.org/@earendil-works/pi-coding-agent/-/pi-coding-agent-${version}.tgz";
-    hash = "sha256-FVxYABNMuN9sR62z6rVkFej6d0bgscumaHE0E3xFHZA=";
+    hash = "sha256-ppoYWWAX6RlV/Q/Wd75p+rW26gHVsGIHvO407hUivCA=";
   };
 
   # Unpack the npm tarball, backfill the missing workspace integrities so both
@@ -30,6 +33,9 @@ let
     jq '
         .packages["node_modules/@earendil-works/pi-ai"].integrity = "${workspaceIntegrity.pi-ai}"
       | .packages["node_modules/@earendil-works/pi-agent-core"].integrity = "${workspaceIntegrity.pi-agent-core}"
+      | .packages["node_modules/@earendil-works/pi-client"].integrity = "${workspaceIntegrity.pi-client}"
+      | .packages["node_modules/@earendil-works/pi-protocol"].integrity = "${workspaceIntegrity.pi-protocol}"
+      | .packages["node_modules/@earendil-works/pi-telemetry"].integrity = "${workspaceIntegrity.pi-telemetry}"
       | .packages["node_modules/@earendil-works/pi-tui"].integrity = "${workspaceIntegrity.pi-tui}"
     ' npm-shrinkwrap.json > npm-shrinkwrap.json.tmp
     mv npm-shrinkwrap.json.tmp npm-shrinkwrap.json
@@ -41,7 +47,7 @@ let
     pname = "pi-coding-agent";
     inherit version src;
 
-    npmDepsHash = "sha256-lO8UJ4qf9LXWaC4DChhwS1dzYndf8JYphGvdRqbtpKM=";
+    npmDepsHash = "sha256-FfwODI+m5Jts0PrjA9mFa+Mp9QT17/ejixg84RGXGe4=";
 
     # The published tarball already ships a built dist/, so there is nothing
     # to compile; only install the pinned dependencies.
