@@ -1,0 +1,4 @@
+interface:
+  display_name: "Superpower"
+  short_description: "High-agency coding workflow with verification"
+  default_prompt: "Gunakan workflow superpower: pahami repo cepat, eksekusi end-to-end, verifikasi hasil, dan laporkan singkat."

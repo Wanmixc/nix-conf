@@ -1,0 +1,39 @@
+{
+  "name": "brainstorming",
+  "version": "0.1.0",
+  "description": "Structured ideation plugin for exploring options, naming, and tradeoffs before implementation.",
+  "author": {
+    "name": "wanmixc",
+    "email": "wanmixc@localhost",
+    "url": "https://github.com/Wanmixc"
+  },
+  "homepage": "https://github.com/Wanmixc",
+  "repository": "https://github.com/Wanmixc/home-manager-linux",
+  "license": "MIT",
+  "keywords": [
+    "brainstorming",
+    "ideation",
+    "planning",
+    "naming",
+    "productivity"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Brainstorming",
+    "shortDescription": "Generate concrete options with clear tradeoffs",
+    "longDescription": "Use Brainstorming to explore multiple directions, compare tradeoffs, create names, and turn vague ideas into concrete next steps before implementation.",
+    "developerName": "wanmixc",
+    "category": "Productivity",
+    "capabilities": ["Interactive", "Read", "Write"],
+    "websiteURL": "https://github.com/Wanmixc",
+    "privacyPolicyURL": "https://openai.com/policies/privacy-policy/",
+    "termsOfServiceURL": "https://openai.com/policies/terms-of-use/",
+    "defaultPrompt": [
+      "Give me three product directions for this idea.",
+      "Help me compare architecture options and tradeoffs.",
+      "Generate naming options for this feature."
+    ],
+    "brandColor": "#0F766E",
+    "screenshots": []
+  }
+}
