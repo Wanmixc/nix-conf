@@ -1,0 +1,19 @@
+{
+  "permissionReviewLog": true,
+  "yoloMode": false,
+  "doublePressToConfirm": true,
+  "permission": {
+    "*": "ask",
+    "path": { "*": "allow", "*.env": "deny", "*.env.*": "deny", "*.env.example": "allow" },
+    "read": "allow",
+    "write": "ask",
+    "edit": "ask",
+    "bash": {
+      "*": "ask", "pwd": "allow", "ls": "allow", "ls *": "allow", "cat": "allow", "cat *": "allow",
+      "head *": "allow", "tail *": "allow", "grep *": "allow", "rg *": "allow", "find *": "allow", "fd *": "allow",
+      "wc *": "allow", "sort *": "allow", "uniq *": "allow", "file *": "allow", "realpath *": "allow",
+      "basename *": "allow", "dirname *": "allow", "which *": "allow", "type *": "allow", "echo *": "allow", "printf *": "allow",
+      "git status": "allow", "git status *": "allow", "git diff": "allow", "git diff *": "allow", "git log": "allow", "git log *": "allow"
+    }
+  }
+}

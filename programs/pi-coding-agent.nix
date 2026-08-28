@@ -69,7 +69,66 @@ let
       mainProgram = "pi";
     };
   };
+  # ── pi agent declarative config ──────────────────────────────────────
+  piDir = ".pi/agent";
+
+  settings = {
+    theme = "dark";
+    quietStartup = true;
+    enableInstallTelemetry = false;
+    collapseChangelog = true;
+    defaultProvider = "mimo";
+    defaultModel = "deepseek/deepseek-v4-pro";
+    defaultThinkingLevel = "medium";
+    packages = ["npm:pi-web-access" "npm:@gotgenes/pi-permission-system" "npm:pi-zentui"];
+  };
+
+  models = {
+    providers = {
+      mimo = {
+        baseUrl = "https://api.xkiro.com/v1";
+        api = "openai-completions";
+        apiKey = "$MIMO_API_KEY";
+        models = [
+          {
+            id = "deepseek/deepseek-v4-pro";
+            name = "deepseek/deepseek-v4-pro";
+          }
+        ];
+      };
+    };
+  };
+  permissionConfig = builtins.fromJSON (builtins.readFile ./pi/permission-config.json);
 in
 {
   home.packages = [ pi-coding-agent ];
+  home.activation.piPackages = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    package_source=${./pi/packages}
+    target="$HOME/.pi/agent/npm"
+    mkdir -p "$target"
+    cp "$package_source/package.json" "$target/package.json"
+    cp "$package_source/package-lock.json" "$target/package-lock.json"
+    ${pkgs.nodejs}/bin/npm ci --ignore-scripts --omit=dev --prefix "$target"
+  '';
+  home.file.".pi/agent/AGENTS.md".source = ./pi/AGENTS.md;
+  home.file.".pi/agent/extensions/pi-permission-system/config.json".text = builtins.toJSON permissionConfig;
+  home.file.".pi/agent/skills/brainstorming/SKILL.md".source = ./codex/skills/superpowers/brainstorming/SKILL.md;
+  home.file.".pi/agent/skills/dispatching-parallel-agents/SKILL.md".source = ./codex/skills/superpowers/dispatching-parallel-agents/SKILL.md;
+  home.file.".pi/agent/skills/executing-plans/SKILL.md".source = ./codex/skills/superpowers/executing-plans/SKILL.md;
+  home.file.".pi/agent/skills/finishing-a-development-branch/SKILL.md".source = ./codex/skills/superpowers/finishing-a-development-branch/SKILL.md;
+  home.file.".pi/agent/skills/receiving-code-review/SKILL.md".source = ./codex/skills/superpowers/receiving-code-review/SKILL.md;
+  home.file.".pi/agent/skills/requesting-code-review/SKILL.md".source = ./codex/skills/superpowers/requesting-code-review/SKILL.md;
+  home.file.".pi/agent/skills/subagent-driven-development/SKILL.md".source = ./codex/skills/superpowers/subagent-driven-development/SKILL.md;
+  home.file.".pi/agent/skills/systematic-debugging/SKILL.md".source = ./codex/skills/superpowers/systematic-debugging/SKILL.md;
+  home.file.".pi/agent/skills/test-driven-development/SKILL.md".source = ./codex/skills/superpowers/test-driven-development/SKILL.md;
+  home.file.".pi/agent/skills/using-git-worktrees/SKILL.md".source = ./codex/skills/superpowers/using-git-worktrees/SKILL.md;
+  home.file.".pi/agent/skills/using-superpowers/SKILL.md".source = ./codex/skills/superpowers/using-superpowers/SKILL.md;
+  home.file.".pi/agent/skills/verification-before-completion/SKILL.md".source = ./codex/skills/superpowers/verification-before-completion/SKILL.md;
+  home.file.".pi/agent/skills/writing-plans/SKILL.md".source = ./codex/skills/superpowers/writing-plans/SKILL.md;
+  home.file.".pi/agent/skills/writing-skills/SKILL.md".source = ./codex/skills/superpowers/writing-skills/SKILL.md;
+  home.file.".pi/agent/skills/commit-message-id/SKILL.md".source = ./codex/skills/commit-message-id/SKILL.md;
+  home.file.".pi/agent/skills/herdr/SKILL.md".source = ./pi/skills/herdr/SKILL.md;
+
+  home.file."${piDir}/settings.json".text = builtins.toJSON settings;
+  home.file."${piDir}/models.json".text = builtins.toJSON models;
 }

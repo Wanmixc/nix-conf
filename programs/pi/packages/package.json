@@ -1,0 +1,1 @@
+{"name":"pi-extensions","private":true,"dependencies":{"pi-web-access":"0.22.0","@gotgenes/pi-permission-system":"25.0.0","pi-zentui":"0.18.1"}}
