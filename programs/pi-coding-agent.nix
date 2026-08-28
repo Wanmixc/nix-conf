@@ -102,12 +102,30 @@ let
 in
 {
   home.packages = [ pi-coding-agent ];
+
+  # Keep asynchronous startup update banners out of normal interactive use.
+  # Explicit update commands still run normally: `pi update` and
+  # `pi update --extensions`.
+  programs.fish.functions.pi = {
+    body = ''
+      if test (count $argv) -eq 0
+        env PI_OFFLINE=1 PI_SKIP_VERSION_CHECK=1 /home/ubuntu/.local/state/nix/profiles/profile/bin/pi
+      else
+        command pi $argv
+      end
+    '';
+  };
+
   home.activation.piPackages = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     package_source=${./pi/packages}
     target="$HOME/.pi/agent/npm"
     mkdir -p "$target"
-    cp "$package_source/package.json" "$target/package.json"
-    cp "$package_source/package-lock.json" "$target/package-lock.json"
+    # Files copied from the Nix store are read-only. Replace old manifests
+    # atomically so repeated Home Manager switches do not fail on permissions.
+    cp "$package_source/package.json" "$target/.package.json.tmp"
+    cp "$package_source/package-lock.json" "$target/.package-lock.json.tmp"
+    mv -f "$target/.package.json.tmp" "$target/package.json"
+    mv -f "$target/.package-lock.json.tmp" "$target/package-lock.json"
     ${pkgs.nodejs}/bin/npm ci --ignore-scripts --omit=dev --prefix "$target"
   '';
   home.file.".pi/agent/AGENTS.md".source = ./pi/AGENTS.md;
