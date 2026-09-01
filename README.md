@@ -20,9 +20,9 @@ Available Home Manager flake targets:
 
 AI tool policy:
 
-- `cachyos-nix` -> `codex`, `claude-code`
-- `wsl` -> `codex`, `claude-code`, `pi-coding-agent`, `hermes`
-- `vps` -> `deepseek`
+- `cachyos-nix` -> `codex`, `claude-code`, `ollama`, `pi-coding-agent`
+- `wsl` -> `codex`, `claude-code`, `pi-coding-agent`
+- `vps` -> `claude-code`, `pi-coding-agent`
 - Claude Code is split into `programs/claude-code.nix` so it can be imported only on selected machines.
 
 Neovim policy:
@@ -56,6 +56,7 @@ Neovim policy:
 │   ├── deepseek.nix
 │   ├── hermes.nix
 │   ├── pi-coding-agent.nix
+│   ├── jcode.nix
 │   ├── herdr-plus.nix
 │   ├── ollama.nix
 │   ├── nvim.nix
@@ -75,7 +76,10 @@ Neovim policy:
 │   ├── codex/
 │   │   ├── plugins/
 │   │   └── skills/
-│   └── deepseek/
+│   ├── deepseek/
+│   │   └── skills/
+│   └── pi/
+│       ├── packages/
 │       └── skills/
 └── secrets.json  # local only, ignored by git
 ```
@@ -91,7 +95,8 @@ If present, it may contain:
   "github_token": "your github token",
   "notion_token": "your Notion integration token",
   "paste_api_url": "https://your paste api domain",
-  "supermemory_codex_api_key": "your supermemory api key"
+  "supermemory_codex_api_key": "your supermemory api key",
+  "mimo_api_key": "your Mimo API key"
 }
 ```
 
@@ -103,7 +108,15 @@ If present, it may contain:
 
 `supermemory_codex_api_key` is optional and is written at activation time into runtime-only env files under `~/.config/runtime-env/`. Fish sources `supermemory.fish`; tmux also receives the variable when a tmux server is already running. This keeps the secret out of the Nix store.
 
+`mimo_api_key` is required on machines using Pi's configured Mimo provider. It is written to `~/.config/runtime-env/mimo.fish` as `MIMO_API_KEY`, and new Fish shells source this file automatically. `pi_api_key` is also accepted as a legacy fallback when `mimo_api_key` is absent.
+
 If the file is absent, the configuration still evaluates successfully. A Home Manager switch for a machine with Codex fails before the write boundary when `notion_token` is absent or empty.
+
+The current runtime generator reads this file from `/home/wanmixc/configuration/secrets.json`. If the repository is cloned elsewhere, update `secretsPath` in `programs/env.nix` before relying on runtime credentials.
+
+## Pi Coding Agent
+
+`pi-coding-agent` is imported by all three host targets. Its Mimo provider uses the generated `MIMO_API_KEY` environment variable. The Pi extensions are installed declaratively from `programs/pi/packages/` and their exact versions are pinned in `programs/pi-coding-agent.nix`, so Pi does not perform an online package update check at startup. Update the package manifest, lockfile, and Pi version pins together when upgrading them.
 
 ## Paste Commands
 
@@ -140,14 +153,15 @@ Current machine-specific imports:
 ```text
 cachyos-nix:
   base env git fish starship xdg devtools codex desktop nvim herdr
-  herdr-plus yazi fastfetch rmpc mpd claude-code
+  herdr-plus yazi fastfetch rmpc mpd claude-code ollama pi-coding-agent
 
 wsl:
-  base env git fish starship devtools claude-code pi-coding-agent hermes
+  base env git fish starship devtools claude-code pi-coding-agent
   codex nvim herdr herdr-plus yazi fastfetch
 
 vps:
-  base env git fish starship xdg devtools deepseek nvim tmux yazi fastfetch
+  base env git fish starship devtools claude-code pi-coding-agent nvim herdr
+  herdr-plus yazi fastfetch
 ```
 
 To enable or disable a tool per machine, add or remove its module in the target file under `hosts/`.
@@ -164,15 +178,15 @@ cd ~/.config/home-manager
 Apply a target with Home Manager:
 
 ```bash
-home-manager switch --flake .#wanmixc-cachyos-nix
-home-manager switch --flake .#wanmixc-wsl
-home-manager switch --flake .#wanmixc-vps
+home-manager switch --impure --flake .#wanmixc-cachyos-nix
+home-manager switch --impure --flake .#wanmixc-wsl
+home-manager switch --impure --flake .#wanmixc-vps
 ```
 
 If local files already exist and need backup:
 
 ```bash
-home-manager switch -b backup --flake .#wanmixc-cachyos-nix
+home-manager switch -b backup --impure --flake .#wanmixc-cachyos-nix
 ```
 
 ## Compatibility Wrapper
@@ -188,15 +202,15 @@ Current behavior:
 For VPS, prefer:
 
 ```bash
-home-manager switch --flake .#wanmixc-vps
+home-manager switch --impure --flake .#wanmixc-vps
 ```
 
 ## Notes
 
-- `programs/tmux/tmux.nix` is preserved and imported through [programs/tmux.nix](programs/tmux.nix). It is currently imported by the VPS profile.
+- `programs/tmux/tmux.nix` is preserved and imported through [programs/tmux.nix](programs/tmux.nix), but it is not currently imported by a host profile.
 - Desktop-only integrations such as Edge and Codex Chrome DevTools MCP are enabled through [programs/desktop.nix](programs/desktop.nix) and currently imported by `cachyos-nix`.
-- DeepSeek is packaged through a binary release flow in [programs/deepseek.nix](programs/deepseek.nix) and currently imported by `vps`.
+- DeepSeek is packaged through a binary release flow in [programs/deepseek.nix](programs/deepseek.nix), but it is not currently imported by a host profile.
 - Claude Code is packaged in [programs/claude-code.nix](programs/claude-code.nix) by overriding `pkgs.claude-code` to the pinned upstream binary version.
-- Herdr itself is configured in [programs/herdr/default.nix](programs/herdr/default.nix), with raw TOML config in [programs/herdr/config.toml](programs/herdr/config.toml). Herdr and Herdr Plus are imported by `cachyos-nix` and `wsl`, not by `vps`.
+- Herdr itself is configured in [programs/herdr/default.nix](programs/herdr/default.nix), with raw TOML config in [programs/herdr/config.toml](programs/herdr/config.toml). Herdr and Herdr Plus are imported by all three host profiles.
 - Herdr Plus is installed and registered by [programs/herdr-plus.nix](programs/herdr-plus.nix).
-- Hermes Agent is imported from its upstream flake by [programs/hermes.nix](programs/hermes.nix).
+- Hermes Agent is available through [programs/hermes.nix](programs/hermes.nix), but is not currently imported by a host profile.
