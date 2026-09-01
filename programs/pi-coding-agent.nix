@@ -80,7 +80,13 @@ let
     defaultProvider = "mimo";
     defaultModel = "deepseek/deepseek-v4-pro";
     defaultThinkingLevel = "medium";
-    packages = ["npm:pi-web-access" "npm:@gotgenes/pi-permission-system" "npm:pi-zentui"];
+    # These packages are installed declaratively below. Pin their Pi sources to
+    # the same versions so Pi does not run an online update check at startup.
+    packages = [
+      "npm:pi-web-access@0.22.0"
+      "npm:@gotgenes/pi-permission-system@25.0.0"
+      "npm:pi-zentui@0.18.1"
+    ];
   };
 
   models = {
@@ -109,7 +115,7 @@ in
   programs.fish.functions.pi = {
     body = ''
       if test (count $argv) -eq 0
-        env PI_OFFLINE=1 PI_SKIP_VERSION_CHECK=1 /home/ubuntu/.local/state/nix/profiles/profile/bin/pi
+        env PI_SKIP_VERSION_CHECK=1 /home/wanmixc/.local/state/nix/profiles/profile/bin/pi
       else
         command pi $argv
       end

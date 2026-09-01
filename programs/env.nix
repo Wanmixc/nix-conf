@@ -184,6 +184,8 @@ except FileNotFoundError:
     raise SystemExit(0)
 
 value = data.get("mimo_api_key", "")
+if not isinstance(value, str) or value == "":
+    value = data.get("pi_api_key", "")
 if isinstance(value, str):
     print(value)
 else:
