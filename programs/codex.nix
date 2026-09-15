@@ -7,8 +7,8 @@ let
     version = "0.153.4";
 
     src = pkgs.fetchurl {
-      url = "https://github.com/openai/codex/releases/download/rust-v0.153.4/codex-x86_64-unknown-linux-musl.tar.gz";
-      sha256 = "sha256-9HlCTsoJJITcQNh64oxE9MxAI0pgBF1hMeSTgA2BSjA=";
+      url = "https://github.com/openai/codex/releases/download/rust-v0.153.4/codex-package-x86_64-unknown-linux-musl.tar.gz";
+      sha256 = "sha256-qCIYfhokIMYcWSZyG/vYeHAe2VVHybsNTeRJiha6GCE=";
     };
 
     nativeBuildInputs = [
@@ -17,6 +17,7 @@ let
     ];
 
     buildInputs = [
+      pkgs.ncurses
       pkgs.stdenv.cc.cc.lib
     ];
 
@@ -28,9 +29,16 @@ let
     '';
 
     installPhase = ''
-      mkdir -p $out/bin
-      cp codex-x86_64-unknown-linux-musl $out/bin/codex
-      chmod +x $out/bin/codex
+      mkdir -p $out
+      cp -r bin codex-path codex-resources $out/
+      chmod +x \
+        $out/bin/codex \
+        $out/bin/codex-code-mode-host \
+        $out/codex-path/rg
+
+      if [ -f $out/codex-resources/bwrap ]; then
+        chmod +x $out/codex-resources/bwrap
+      fi
     '';
   };
 

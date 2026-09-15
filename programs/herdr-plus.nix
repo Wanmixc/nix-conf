@@ -268,8 +268,7 @@ PY
     working_dir = "~/Extra/Development/idea"
 
     [[tabs]]
-    name = "Claude"
-    command = "claude"
+    name = "Just Shell"
   '';
 
   xdg.configFile."herdr/plugins/config/${pluginId}/projects/hermes.toml".text = ''
