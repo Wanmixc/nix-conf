@@ -73,6 +73,13 @@ type        = "plugin_action"
 command     = "cloudmanic.herdr-plus.quick-actions"
 description = "Herdr Plus: Quick Actions picker"
 
+# Open Herdr Recent Navigator.
+[[keys.command]]
+key         = "prefix+f"
+type        = "plugin_action"
+command     = "beyondlex.herdr-recent-navigator.open"
+description = "Herdr Recent Navigator"
+
 # ============================================================
 #  Appearance
 # ============================================================

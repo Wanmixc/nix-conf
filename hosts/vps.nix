@@ -11,6 +11,7 @@
     ../programs/nvim.nix
     ../programs/herdr
     ../programs/herdr-plus.nix
+    ../programs/herdr-recent-navigator.nix
     ../programs/yazi.nix
     ../programs/fastfetch.nix
   ];

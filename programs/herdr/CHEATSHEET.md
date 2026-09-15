@@ -16,15 +16,18 @@ Terminal multiplexer. Keys below reflect **your** config in
 | `⟨p⟩ r` | Reload config (`~/.config/herdr/config.toml`) |
 | `⟨p⟩ b` | Toggle sidebar |
 
-## Plugins (herdr-plus)
+## Plugins
 
 | Keys | Action |
 |------|--------|
 | `⟨p⟩ p` | Herdr Plus: Projects picker |
 | `⟨p⟩ P` | Quick Actions picker (`prefix+shift+p`, commented out by default) |
+| `⟨p⟩ f` | Herdr Recent Navigator |
 
-Configured via `[[keys.command]]` in `config.toml`; plugin itself lives in
-[`programs/herdr-plus.nix`](../programs/herdr-plus.nix).
+Configured via `[[keys.command]]` in `config.toml`; Herdr Plus and Recent
+Navigator are installed declaratively by
+[`programs/herdr-plus.nix`](../programs/herdr-plus.nix) and
+[`programs/herdr-recent-navigator.nix`](../programs/herdr-recent-navigator.nix).
 
 ## Tabs
 
