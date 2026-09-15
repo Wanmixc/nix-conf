@@ -78,7 +78,7 @@ let
     enableInstallTelemetry = false;
     collapseChangelog = true;
     defaultProvider = "mimo";
-    defaultModel = "deepseek/deepseek-v4-pro";
+    defaultModel = "qwen/qwen3.8-max:free";
     defaultThinkingLevel = "medium";
     # These packages are installed declaratively below. Pin their Pi sources to
     # the same versions so Pi does not run an online update check at startup.
@@ -97,8 +97,8 @@ let
         apiKey = "$MIMO_API_KEY";
         models = [
           {
-            id = "deepseek/deepseek-v4-pro";
-            name = "deepseek/deepseek-v4-pro";
+            id = "qwen/qwen3.8-max:free";
+            name = "qwen/qwen3.8-max:free";
           }
         ];
       };
