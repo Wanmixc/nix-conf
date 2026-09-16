@@ -26,8 +26,8 @@ runtime_env_dir = pathlib.Path(sys.argv[1])
 secrets_path = sys.argv[2]
 
 helper_script = """\
-# BEGIN github-credential-helper
 #!/usr/bin/env bash
+# BEGIN github-credential-helper
 set -euo pipefail
 
 secrets_path="''${GITHUB_SECRETS_PATH:-__SECRETS_PATH__}"
