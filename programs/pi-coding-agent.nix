@@ -25,7 +25,7 @@ let
   # devDependencies (which the published shrinkwrap omits) since dist/ is
   # already built and we never compile.
   src = pkgs.runCommand "pi-coding-agent-src-${version}" {
-    nativeBuildInputs = [ pkgs.jq ];
+    nativeBuildInputs = [ pkgs.jq pkgs.python3 ];
   } ''
     mkdir -p "$out"
     tar xzf ${rawSrc} --strip-components=1 -C "$out"
@@ -41,6 +41,44 @@ let
     mv npm-shrinkwrap.json.tmp npm-shrinkwrap.json
     jq 'del(.devDependencies)' package.json > package.json.tmp
     mv package.json.tmp package.json
+
+    # Make Tab context-aware: autocomplete wins when visible; otherwise Tab
+    # queues a follow-up only while the agent is working. Keep these rewrites
+    # exact so a Pi upgrade fails loudly instead of silently losing behavior.
+    ${pkgs.python3}/bin/python3 - <<'PY'
+from pathlib import Path
+
+replacements = {
+    Path("dist/modes/interactive/components/custom-editor.js"): (
+        """        // Check all other app actions
+""",
+        """        // Let autocomplete consume Tab before the follow-up action.
+        if (this.keybindings.matches(data, \"app.message.followUp\") && this.isShowingAutocomplete()) {
+            super.handleInput(data);
+            return;
+        }
+        // Check all other app actions
+""",
+    ),
+    Path("dist/modes/interactive/interactive-mode.js"): (
+        """        // If not streaming, Alt+Enter acts like regular Enter (trigger onSubmit)
+        else if (this.editor.onSubmit) {
+            this.editor.setText(\"\");
+            this.editor.onSubmit(text);
+        }
+""",
+        """        // Follow-up is only meaningful while the agent is working.
+        // When idle, Tab remains available for autocomplete and never submits.
+""",
+    ),
+}
+
+for path, (old, new) in replacements.items():
+    text = path.read_text()
+    if old not in text:
+        raise SystemExit(f"patch target not found: {path}")
+    path.write_text(text.replace(old, new, 1))
+PY
   '';
 
   pi-coding-agent = pkgs.buildNpmPackage {
@@ -54,7 +92,57 @@ let
     dontNpmBuild = true;
     npmFlags = [ "--ignore-scripts" "--omit=dev" ];
 
-    nativeBuildInputs = [ pkgs.makeBinaryWrapper ];
+    # pi-tui is a dependency installed by npm rather than part of src. Patch
+    # its Enter completion path after installation so slash/file completion
+    # never submits the prompt accidentally.
+    postInstall = ''
+      found=0
+      while IFS= read -r editor; do
+        ${pkgs.python3}/bin/python3 - "$editor" <<'PY'
+from pathlib import Path
+import sys
+
+path = Path(sys.argv[1])
+text = path.read_text()
+confirm = '            if (kb.matches(data, "tui.select.confirm")) {'
+confirm_pos = text.find(confirm)
+if confirm_pos < 0:
+    raise SystemExit(f"confirm target not found: {path}")
+selected = '                const selected = this.autocompleteList.getSelectedItem();\n'
+selected_pos = text.find(selected, confirm_pos)
+provider = '                if (selected && this.autocompleteProvider) {\n'
+provider_pos = text.find(provider, selected_pos)
+if selected_pos < 0 or provider_pos < 0:
+    raise SystemExit(f"confirm selection target not found: {path}")
+insert_at = provider_pos + len(provider)
+text = text[:insert_at] + """                    const wasExactSlashCommand = this.autocompletePrefix.startsWith(\"/\") &&
+                        this.getText().trim() === `/''${selected.value}`;
+                    const slashPrefix = this.autocompletePrefix.startsWith(\"/\")
+                        ? this.autocompletePrefix.slice(1).toLowerCase()
+                        : \"\";
+                    const matchingSlashCommands = slashPrefix
+                        ? this.autocompleteList.filteredItems.filter((item) => item.value.toLowerCase().startsWith(slashPrefix))
+                        : [];
+                    const isOnlyMatchingSlashCommand = matchingSlashCommands.length === 1 &&
+                        matchingSlashCommands[0].value === selected.value;
+""" + text[insert_at:]
+slash = 'if (this.autocompletePrefix.startsWith("/")'
+slash_pos = text.find(slash, confirm_pos)
+if slash_pos < 0:
+    raise SystemExit(f"slash condition target not found: {path}")
+comment = '                        // Fall through to submit'
+comment_pos = text.find(comment, slash_pos)
+if comment_pos < 0:
+    raise SystemExit(f"slash submit marker not found: {path}")
+text = text[:comment_pos] + '                        if (!wasExactSlashCommand && !isOnlyMatchingSlashCommand)\n                            return;' + text[comment_pos + len(comment):]
+path.write_text(text)
+PY
+        found=$((found + 1))
+      done < <(find "$out" -path '*/node_modules/@earendil-works/pi-tui/dist/components/editor.js' -type f)
+      test "$found" -eq 1
+    '';
+
+    nativeBuildInputs = [ pkgs.makeBinaryWrapper pkgs.python3 ];
 
     # pi shells out to ripgrep and fd at runtime.
     postFixup = ''
@@ -78,7 +166,7 @@ let
     enableInstallTelemetry = false;
     collapseChangelog = true;
     defaultProvider = "mimo";
-    defaultModel = "qwen/qwen3.8-max:free";
+    defaultModel = "deepseek/deepseek-v4.1-flash:free";
     defaultThinkingLevel = "medium";
     # These packages are installed declaratively below. Pin their Pi sources to
     # the same versions so Pi does not run an online update check at startup.
@@ -97,8 +185,8 @@ let
         apiKey = "$MIMO_API_KEY";
         models = [
           {
-            id = "qwen/qwen3.8-max:free";
-            name = "qwen/qwen3.8-max:free";
+            id = "deepseek/deepseek-v4.1-flash:free";
+            name = "qdeepseek/deepseek-v4.1-flash:free";
           }
         ];
       };
@@ -154,5 +242,10 @@ in
   home.file.".pi/agent/skills/herdr/SKILL.md".source = ./pi/skills/herdr/SKILL.md;
 
   home.file."${piDir}/settings.json".text = builtins.toJSON settings;
+  home.file."${piDir}/keybindings.json".text = builtins.toJSON {
+    # Use Tab for queued follow-up messages while Pi is working. Pi's patched
+    # editor gives autocomplete priority when a completion menu is visible.
+    "app.message.followUp" = "tab";
+  };
   home.file."${piDir}/models.json".text = builtins.toJSON models;
 }
