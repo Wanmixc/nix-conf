@@ -2,12 +2,16 @@
   "permissionReviewLog": true,
   "yoloMode": false,
   "doublePressToConfirm": true,
+  "piInfrastructureReadPaths": [
+    "/nix/store/**-hm_SKILL.md"
+  ],
   "permission": {
     "*": "ask",
     "path": { "*": "allow", "*.env": "deny", "*.env.*": "deny", "*.env.example": "allow" },
     "read": "allow",
     "write": "ask",
     "edit": "ask",
+    "skill": { "*": "allow" },
     "bash": {
       "*": "ask", "pwd": "allow", "ls": "allow", "ls *": "allow", "cat": "allow", "cat *": "allow",
       "head *": "allow", "tail *": "allow", "grep *": "allow", "rg *": "allow", "find *": "allow", "fd *": "allow",
