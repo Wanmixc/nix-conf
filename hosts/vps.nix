@@ -6,7 +6,6 @@
     ../programs/fish.nix
     ../programs/starship.nix
     ../programs/devtools.nix
-    ../programs/claude-code.nix
     ../programs/pi-coding-agent.nix
     ../programs/nvim.nix
     ../programs/herdr
