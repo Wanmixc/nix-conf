@@ -224,21 +224,15 @@ in
   '';
   home.file.".pi/agent/AGENTS.md".source = ./pi/AGENTS.md;
   home.file.".pi/agent/extensions/pi-permission-system/config.json".text = builtins.toJSON permissionConfig;
-  home.file.".pi/agent/skills/brainstorming/SKILL.md".source = ./codex/skills/superpowers/brainstorming/SKILL.md;
-  home.file.".pi/agent/skills/dispatching-parallel-agents/SKILL.md".source = ./codex/skills/superpowers/dispatching-parallel-agents/SKILL.md;
-  home.file.".pi/agent/skills/executing-plans/SKILL.md".source = ./codex/skills/superpowers/executing-plans/SKILL.md;
-  home.file.".pi/agent/skills/finishing-a-development-branch/SKILL.md".source = ./codex/skills/superpowers/finishing-a-development-branch/SKILL.md;
-  home.file.".pi/agent/skills/receiving-code-review/SKILL.md".source = ./codex/skills/superpowers/receiving-code-review/SKILL.md;
-  home.file.".pi/agent/skills/requesting-code-review/SKILL.md".source = ./codex/skills/superpowers/requesting-code-review/SKILL.md;
-  home.file.".pi/agent/skills/subagent-driven-development/SKILL.md".source = ./codex/skills/superpowers/subagent-driven-development/SKILL.md;
-  home.file.".pi/agent/skills/systematic-debugging/SKILL.md".source = ./codex/skills/superpowers/systematic-debugging/SKILL.md;
-  home.file.".pi/agent/skills/test-driven-development/SKILL.md".source = ./codex/skills/superpowers/test-driven-development/SKILL.md;
-  home.file.".pi/agent/skills/using-git-worktrees/SKILL.md".source = ./codex/skills/superpowers/using-git-worktrees/SKILL.md;
-  home.file.".pi/agent/skills/using-superpowers/SKILL.md".source = ./codex/skills/superpowers/using-superpowers/SKILL.md;
-  home.file.".pi/agent/skills/verification-before-completion/SKILL.md".source = ./codex/skills/superpowers/verification-before-completion/SKILL.md;
-  home.file.".pi/agent/skills/writing-plans/SKILL.md".source = ./codex/skills/superpowers/writing-plans/SKILL.md;
-  home.file.".pi/agent/skills/writing-skills/SKILL.md".source = ./codex/skills/superpowers/writing-skills/SKILL.md;
-  home.file.".pi/agent/skills/commit-message-id/SKILL.md".source = ./codex/skills/commit-message-id/SKILL.md;
+  # Include reference documents, prompts, and scripts alongside each SKILL.md.
+  home.file.".pi/agent/skills" = {
+    source = ./codex/skills/superpowers;
+    recursive = true;
+  };
+  home.file.".pi/agent/skills/commit-message-id" = {
+    source = ./codex/skills/commit-message-id;
+    recursive = true;
+  };
   home.file.".pi/agent/skills/herdr/SKILL.md".source = ./pi/skills/herdr/SKILL.md;
 
   home.file."${piDir}/settings.json".text = builtins.toJSON settings;
