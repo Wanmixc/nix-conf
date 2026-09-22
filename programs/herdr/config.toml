@@ -92,3 +92,6 @@ pane_borders        = true
 pane_gaps           = true
 confirm_close       = true  # ask before closing a pane
 prompt_new_tab_name = false # don't prompt for tab name
+
+[experimental]
+kitty_graphics = true       # render Kitty graphics in compatible outer terminals
