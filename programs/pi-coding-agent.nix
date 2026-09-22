@@ -160,6 +160,30 @@ PY
   # ── pi agent declarative config ──────────────────────────────────────
   piDir = ".pi/agent";
 
+  autoChatName = {
+    enable = true;
+  };
+  # Only non-secret values belong here. The extension reads ntfy_url at runtime.
+  ntfyNotifications = {
+    enable = true;
+    thresholdSeconds = 60;
+    secretsFile = "/home/wanmixc/configuration/secrets.json";
+  };
+  ntfyConfig = pkgs.writeText "pi-ntfy-config.json" (builtins.toJSON {
+    autoNameEnabled = autoChatName.enable;
+    notificationsEnabled = ntfyNotifications.enable;
+    inherit (ntfyNotifications) thresholdSeconds secretsFile;
+  });
+  # Keep config and imports adjacent even after Nix/Home Manager symlink resolution.
+  ntfyExtension = pkgs.runCommand "pi-ntfy-extension" { } ''
+    mkdir -p "$out"
+    cp ${./pi/extensions/ntfy}/index.ts "$out/index.ts"
+    cp ${./pi/extensions/ntfy}/notify.mjs "$out/notify.mjs"
+    cp ${./pi/extensions/ntfy}/auto-name.mjs "$out/auto-name.mjs"
+    cp ${./pi/extensions/ntfy}/title-request.mjs "$out/title-request.mjs"
+    cp ${ntfyConfig} "$out/config.json"
+  '';
+
   settings = {
     theme = "dark";
     quietStartup = true;
@@ -196,6 +220,16 @@ PY
 in
 {
   home.packages = [ pi-coding-agent ];
+
+  assertions = [
+    {
+      assertion = builtins.isInt ntfyNotifications.thresholdSeconds && ntfyNotifications.thresholdSeconds >= 0;
+      message = "Pi ntfy thresholdSeconds must be a non-negative integer.";
+    }
+  ];
+  home.file."${piDir}/extensions/ntfy" = lib.mkIf (autoChatName.enable || ntfyNotifications.enable) {
+    source = ntfyExtension;
+  };
 
   # Keep asynchronous startup update banners out of normal interactive use.
   # Explicit update commands still run normally: `pi update` and

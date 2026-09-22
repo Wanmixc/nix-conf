@@ -96,7 +96,8 @@ If present, it may contain:
   "notion_token": "your Notion integration token",
   "paste_api_url": "https://your paste api domain",
   "supermemory_codex_api_key": "your supermemory api key",
-  "mimo_api_key": "your Mimo API key"
+  "mimo_api_key": "your Mimo API key",
+  "ntfy_url": "https://ntfy.example/your-private-topic"
 }
 ```
 
@@ -117,6 +118,24 @@ The current runtime generator reads this file from `/home/wanmixc/configuration/
 ## Pi Coding Agent
 
 `pi-coding-agent` is imported by all three host targets. Its Mimo provider uses the generated `MIMO_API_KEY` environment variable. The Pi extensions are installed declaratively from `programs/pi/packages/` and their exact versions are pinned in `programs/pi-coding-agent.nix`, so Pi does not perform an online package update check at startup. Update the package manifest, lockfile, and Pi version pins together when upgrading them.
+
+### Long-task ntfy notifications
+
+Automatic chat naming makes one best-effort attempt after the first successful interactive response. It sends one bounded user/assistant excerpt pair through the active model, uses no retries, does not backfill existing conversations, and preserves manual names. A naming failure leaves the chat unnamed and is final for that session.
+
+The local Pi extension sends one notification when an interactive task finishes responding or ends with an agent/provider error **after more than 60 seconds**. Retries and queued follow-ups count as one busy period. Short tasks and manual cancellation stay silent; individual tool errors do not trigger alerts. Print, JSON, and RPC modes do not notify.
+
+Add `ntfy_url` (the full HTTPS topic URL) to your local `secrets.json`, preserving its other keys. No token is used. Restrict access with `chmod 600 secrets.json`. The extension reads this file at notification time, so URL changes need no rebuild. Neither the URL nor the file contents are evaluated by Nix or copied into the Nix store. An unauthenticated topic is not private from anyone who knows its URL; use an unguessable topic and do not share it.
+
+Edit `autoChatName.enable` and `ntfyNotifications.enable` independently in `programs/pi-coding-agent.nix`; the extension is installed when either feature is enabled. Change `thresholdSeconds` (non-negative integer seconds) or the runtime `secretsFile` path there as well. Apply with your usual Home Manager switch (VPS: `home-manager switch --flake .#wanmixc-vps`), then restart Pi or run `/reload`. Ensure the new extension files are Git-tracked before using a Git-backed flake; Git flakes exclude untracked files.
+
+Notifications include the server hostname, folder (`~` for your home directory), current Pi chat name, duration, and status. The title is `Pi finished — <server>` or `Pi error — <server>`. Name your chat with `/name`; unnamed chats show `Unnamed chat`, never a prompt-derived fallback. Folder paths and chat names are sent to ntfy, but prompts, code, and raw errors are not. Metadata is kept on one line per field and truncated to 240 characters per field. Delivery runs in the background with a five-second deadline, without redirects or retries. Missing/invalid configuration or failed delivery produces a generic local warning and does not fail the task. Cancelling a retry with the configured interrupt key (normally Esc) also stays silent.
+
+Run the offline tests with:
+
+```sh
+node --test programs/pi/tests/*.test.mjs
+```
 
 ## Paste Commands
 
