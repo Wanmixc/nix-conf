@@ -48,6 +48,41 @@
     };
 
     functions = {
+      gRepoInit = {
+        body = ''
+          if not type -q gh; or not type -q git
+            echo "git and gh are required."
+            return 1
+          end
+
+          if not gh auth status >/dev/null 2>&1
+            echo "Run: gh auth login --hostname github.com --git-protocol ssh --web"
+            return 1
+          end
+
+          set -l repo_name (basename "$PWD")
+          set -l gh_user (gh api user --jq '.login')
+          set -l repo_full_name "$gh_user/$repo_name"
+
+          if git remote get-url origin >/dev/null 2>&1
+            echo "origin already exists:"
+            git remote get-url origin
+            return 1
+          end
+
+          git init -b main; or return 1
+
+          if not test -f README.md
+            printf '# %s\n' "$repo_name" > README.md
+          end
+
+          git add .; or return 1
+          git diff --cached --quiet; or git commit -m "Initial commit"
+
+          gh repo create "$repo_full_name" --private --source=. --remote=origin --push
+        '';
+      };
+
       fish_user_key_bindings = {
         body = ''
           bind -M insert -m default jj repaint-mode

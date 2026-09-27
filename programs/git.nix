@@ -2,6 +2,7 @@
 {
   home.packages = [
     pkgs.git
+    pkgs.gh
     pkgs.openssh
   ];
 

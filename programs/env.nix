@@ -10,6 +10,7 @@ in
   home.activation.supermemoryRuntimeEnv = ''
     runtime_env_dir="$HOME/.config/runtime-env"
     github_helper="$runtime_env_dir/github-credential-helper"
+    gh_fish="$runtime_env_dir/gh.fish"
     paste_fish="$runtime_env_dir/paste.fish"
     supermemory_sh="$runtime_env_dir/supermemory.sh"
     supermemory_fish="$runtime_env_dir/supermemory.fish"
@@ -73,6 +74,43 @@ INNER_PY
 PY
 
     ${pkgs.coreutils}/bin/chmod 700 "$github_helper"
+
+    ${pkgs.python3}/bin/python3 - "$runtime_env_dir" "${secretsPath}" <<'PY'
+import json
+import pathlib
+import shlex
+import sys
+
+runtime_env_dir = pathlib.Path(sys.argv[1])
+secrets_path = sys.argv[2]
+gh_fish = runtime_env_dir / "gh.fish"
+
+github_token = ""
+try:
+    with open(secrets_path, "r", encoding="utf-8") as f:
+        data = json.load(f)
+except (FileNotFoundError, json.JSONDecodeError):
+    data = {}
+
+value = data.get("github_token", "")
+if isinstance(value, str):
+    github_token = value
+
+if github_token:
+    gh_fish.write_text(
+        "set -gx GH_TOKEN %s\n" % shlex.quote(github_token),
+        encoding="utf-8",
+    )
+else:
+    try:
+        gh_fish.unlink()
+    except FileNotFoundError:
+        pass
+PY
+
+    if [ -f "$gh_fish" ]; then
+      ${pkgs.coreutils}/bin/chmod 600 "$gh_fish"
+    fi
 
     paste_api_url="$(${pkgs.python3}/bin/python3 -c '
 import json
@@ -216,6 +254,10 @@ PY
   programs.fish.shellInit = ''
     if test -f "$HOME/.config/runtime-env/paste.fish"
       source "$HOME/.config/runtime-env/paste.fish"
+    end
+
+    if test -f "$HOME/.config/runtime-env/gh.fish"
+      source "$HOME/.config/runtime-env/gh.fish"
     end
 
     if test -f "$HOME/.config/runtime-env/supermemory.fish"
