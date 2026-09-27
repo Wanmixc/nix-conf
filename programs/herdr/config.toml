@@ -86,6 +86,13 @@ description = "Herdr Recent Navigator"
 [theme]
 name = "catppuccin"         # Catppuccin (dark); "catppuccin-latte" for light
 
+[ui.toast]
+delivery      = "herdr"       # show notifications inside Herdr
+delay_seconds = 1              # delay agent-finished/needs-input toasts
+
+[ui.toast.herdr]
+position = "bottom-right"
+
 [ui]
 mouse_capture       = true  # mouse selects/focuses panes
 pane_borders        = true
