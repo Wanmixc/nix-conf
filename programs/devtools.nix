@@ -13,7 +13,7 @@
     fzf
     jq
     speedtest-cli
-    python3
+    (python3.withPackages (pythonPackages: [ pythonPackages.mutagen ]))
     croc
   ];
 

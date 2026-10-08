@@ -2,8 +2,15 @@
 {
   home.packages = with pkgs; [
     microsoft-edge
+    mpv
     sxiv
   ];
+
+  xdg.configFile."mpv/mpv.conf".text = ''
+    keep-open=yes
+    vo=wlshm
+    ytdl-format=bestvideo[height<=720]+bestaudio/best[height<=720]
+  '';
 
   home.activation.codexChromeDevtoolsMcp = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
     CODEx_CONFIG="$HOME/.codex/config.toml"

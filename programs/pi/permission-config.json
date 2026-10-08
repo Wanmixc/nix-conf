@@ -1,7 +1,8 @@
 {
   "permissionReviewLog": true,
-  "yoloMode": false,
+  "yoloMode": true,
   "doublePressToConfirm": true,
+  "debugLog": false,
   "piInfrastructureReadPaths": [
     "/nix/store/**-hm_SKILL.md"
   ],
