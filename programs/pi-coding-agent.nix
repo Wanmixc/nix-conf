@@ -198,6 +198,7 @@ PY
       "npm:pi-web-access@0.22.0"
       "npm:@gotgenes/pi-permission-system@25.0.0"
       "npm:pi-zentui@0.18.1"
+      "npm:pi-mcp-adapter@5.1.0"
     ];
   };
 
@@ -217,6 +218,17 @@ PY
     };
   };
   permissionConfig = builtins.fromJSON (builtins.readFile ./pi/permission-config.json);
+
+  # Shared with Codex and Claude Code: same secrets key, token file, and wrapper.
+  secretsPath = "/home/wanmixc/configuration/secrets.json";
+  notionMcpWrapper = import ./codex/notion-mcp-wrapper.nix { inherit pkgs secretsPath; };
+  mcpAdapterConfig = {
+    mcpServers = {
+      notion-api = {
+        command = "${notionMcpWrapper}/bin/notion-mcp-server";
+      };
+    };
+  };
 in
 {
   home.packages = [ pi-coding-agent ];
@@ -276,4 +288,13 @@ in
     "app.message.followUp" = "tab";
   };
   home.file."${piDir}/models.json".text = builtins.toJSON models;
+  home.file."${piDir}/mcp-adapter.json".text = builtins.toJSON mcpAdapterConfig;
+
+  home.activation.validatePiNotionToken = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
+    ${pkgs.python3}/bin/python3 ${./codex/notion_token.py} check ${secretsPath}
+  '';
+
+  home.activation.piNotion = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    ${pkgs.python3}/bin/python3 ${./codex/notion_token.py} write ${secretsPath} "$HOME/.config/runtime-env/notion-token"
+  '';
 }
