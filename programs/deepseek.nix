@@ -51,7 +51,7 @@ in
 
   home.file = {
     ".deepseek/skills/commit-message-id/SKILL.md".source =
-      ./deepseek/skills/commit-message-id/SKILL.md;
+      ./agents/skills/commit-message-id/SKILL.md;
     ".deepseek/skills/skill-creator/SKILL.md".source =
       ./deepseek/skills/skill-creator/SKILL.md;
   };

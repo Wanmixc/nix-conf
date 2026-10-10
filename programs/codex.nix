@@ -173,20 +173,7 @@ let
     '';
   };
 
-  notionMcpPkg = pkgs.callPackage ./codex/notion-mcp-server.nix { };
-
-  notionMcpWrapper = pkgs.writeShellScriptBin "notion-mcp-server" ''
-    set -euo pipefail
-
-    token_file="$HOME/.config/runtime-env/notion-token"
-    if [ ! -s "$token_file" ]; then
-      echo "Notion token is missing. Run Home Manager after setting notion_token in ${secretsPath}." >&2
-      exit 1
-    fi
-
-    export NOTION_TOKEN="$(${pkgs.coreutils}/bin/cat "$token_file")"
-    exec ${notionMcpPkg}/bin/notion-mcp-server "$@"
-  '';
+  notionMcpWrapper = import ./codex/notion-mcp-wrapper.nix { inherit pkgs secretsPath; };
 
   codexPluginsMarketplace = builtins.toFile "codex-marketplace.json" ''
     {
@@ -237,7 +224,7 @@ in
   ];
 
   home.file.".codex/AGENTS.md" = {
-    source = ./codex/AGENTS.md;
+    source = ./agents/AGENTS.md;
     force = true;
   };
 
@@ -246,10 +233,12 @@ in
   '';
 
   home.activation.codexSkills = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-    while IFS= read -r src; do
-      rel="''${src#${./codex/skills}/}"
-      install -Dm644 "$src" "$HOME/.codex/skills/$rel"
-    done < <(find ${./codex/skills} -type f)
+    for root in ${./agents/skills} ${./codex/skills}; do
+      while IFS= read -r src; do
+        rel="''${src#$root/}"
+        install -Dm644 "$src" "$HOME/.codex/skills/$rel"
+      done < <(find "$root" -type f)
+    done
 
     rm -rf "$HOME/.codex/skills/brainstorming"
   '';

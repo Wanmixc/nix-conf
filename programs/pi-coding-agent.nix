@@ -256,18 +256,18 @@ in
     mv -f "$target/.package-lock.json.tmp" "$target/package-lock.json"
     ${pkgs.nodejs}/bin/npm ci --ignore-scripts --omit=dev --prefix "$target"
   '';
-  home.file.".pi/agent/AGENTS.md".source = ./pi/AGENTS.md;
+  home.file.".pi/agent/AGENTS.md".source = ./agents/AGENTS.md;
   home.file.".pi/agent/extensions/pi-permission-system/config.json".text = builtins.toJSON permissionConfig;
   # Include reference documents, prompts, and scripts alongside each SKILL.md.
   home.file.".pi/agent/skills" = {
-    source = ./codex/skills/superpowers;
+    source = ./agents/skills/superpowers;
     recursive = true;
   };
   home.file.".pi/agent/skills/commit-message-id" = {
-    source = ./codex/skills/commit-message-id;
+    source = ./agents/skills/commit-message-id;
     recursive = true;
   };
-  home.file.".pi/agent/skills/herdr/SKILL.md".source = ./pi/skills/herdr/SKILL.md;
+  home.file.".pi/agent/skills/herdr/SKILL.md".source = ./agents/skills/herdr/SKILL.md;
 
   home.file."${piDir}/settings.json".text = builtins.toJSON settings;
   home.file."${piDir}/keybindings.json".text = builtins.toJSON {
