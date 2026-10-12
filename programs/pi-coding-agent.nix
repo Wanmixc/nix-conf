@@ -1,46 +1,38 @@
 { pkgs, lib, ... }:
 let
-  version = "0.84.1";
-
-  # sha512 SRI integrity for @earendil-works workspace tarballs.
-  # The published npm-shrinkwrap.json omits these, which breaks `npm ci`
-  # under Nix. Values come from `npm view @earendil-works/<pkg>@<version>
-  # dist.integrity` and must be refreshed together with `version`.
-  workspaceIntegrity = {
-    pi-ai = "sha512-wMsAdJMxuNri08vLqTyYVI201DQQezGhPSTkzYsHdw5dYX3rCNwEmSvpaAwhi7ELKI/2tE/CEgSWg/6iRxSgdQ==";
-    pi-agent-core = "sha512-evyzXYWCLQGmcaBYHlmSku02r8qoN4SGI60GZABo6iV+H+nqX+P9ud8fEZ4GmRq9mUSREvvfX+w9dA9ThF9C6w==";
-    pi-client = "sha512-/V5hGHE4Zq+jG0GtwIB9PyBUOGd6gBLZ7lkQYFKchKnxYHeH3rmWC5xw4kpnZKKBuBuFTdLVbU9vEjlAGMMb2A==";
-    pi-protocol = "sha512-Ox1pciyeSPGEEUcxvR0/dJcrY7C6hrEGA8y71rOsvSIUlXN1Cbp/be/eoL71OGDBk5O97TeQPfWN6Ju/2Ehjww==";
-    pi-telemetry = "sha512-180/xGJtsq7IoR3p9EKWjRd0e9M4DkxInhlo9xyD7prDC7Qrhqq+nhvwrW0lFjPfXcEI2FSHmGCSyvSJE9GsaQ==";
-    pi-tui = "sha512-udeXFbgEhJ6JiB0uguwNVNkDy2FENfmtQwPcY+/iJ8GWeq18wkal1tKqa5YyeH0IqtX1vG0cGh8zfSYzyzVuLA==";
-  };
+  version = "1.1.0";
 
   rawSrc = pkgs.fetchurl {
     url = "https://registry.npmjs.org/@earendil-works/pi-coding-agent/-/pi-coding-agent-${version}.tgz";
-    hash = "sha256-ppoYWWAX6RlV/Q/Wd75p+rW26gHVsGIHvO407hUivCA=";
+    hash = "sha256-Cc2KCkPbsdgaZzRrCUALQ5znHYGMq6TpY+qViEahrtQ=";
   };
 
-  # Unpack the npm tarball, backfill the missing workspace integrities so both
-  # dependency fetching and `npm ci` see a valid lockfile, and drop the
-  # devDependencies (which the published shrinkwrap omits) since dist/ is
-  # already built and we never compile.
+  # Since 1.0.0 the published tarball ships no lockfile. Generate one with
+  # `npm install --package-lock-only` (see the header comment below), vendor it
+  # in this directory, and have the sandboxed build step only patch it in.
+  #
+  # Update procedure for a new version:
+  #   1. set `version` and refresh `rawSrc.hash`
+  #   2. regenerate the vendored lockfile:
+  #        npm install --package-lock-only --ignore-scripts --omit=dev \
+  #          --prefix <unpacked tarball with devDependencies removed>
+  #      and copy it to pi-coding-agent-<version>-package-lock.json
+  #   3. set `npmDepsHash` to a dummy, build, and use the reported hash
+  vendoredLockfile = ./pi/pi-coding-agent-${version}-package-lock.json;
+
   src = pkgs.runCommand "pi-coding-agent-src-${version}" {
     nativeBuildInputs = [ pkgs.jq pkgs.python3 ];
   } ''
     mkdir -p "$out"
     tar xzf ${rawSrc} --strip-components=1 -C "$out"
+    chmod -R u+w "$out"
     cd "$out"
-    jq '
-        .packages["node_modules/@earendil-works/pi-ai"].integrity = "${workspaceIntegrity.pi-ai}"
-      | .packages["node_modules/@earendil-works/pi-agent-core"].integrity = "${workspaceIntegrity.pi-agent-core}"
-      | .packages["node_modules/@earendil-works/pi-client"].integrity = "${workspaceIntegrity.pi-client}"
-      | .packages["node_modules/@earendil-works/pi-protocol"].integrity = "${workspaceIntegrity.pi-protocol}"
-      | .packages["node_modules/@earendil-works/pi-telemetry"].integrity = "${workspaceIntegrity.pi-telemetry}"
-      | .packages["node_modules/@earendil-works/pi-tui"].integrity = "${workspaceIntegrity.pi-tui}"
-    ' npm-shrinkwrap.json > npm-shrinkwrap.json.tmp
-    mv npm-shrinkwrap.json.tmp npm-shrinkwrap.json
+
+    # devDependencies are published workspace members and rely on local
+    # workspaces, so drop them and install the release dependencies only.
     jq 'del(.devDependencies)' package.json > package.json.tmp
     mv package.json.tmp package.json
+    cp ${vendoredLockfile} package-lock.json
 
     # Make Tab context-aware: autocomplete wins when visible; otherwise Tab
     # queues a follow-up only while the agent is working. Keep these rewrites
@@ -85,7 +77,7 @@ PY
     pname = "pi-coding-agent";
     inherit version src;
 
-    npmDepsHash = "sha256-FfwODI+m5Jts0PrjA9mFa+Mp9QT17/ejixg84RGXGe4=";
+    npmDepsHash = "sha256-dB8OUdcpBrQKBy1jhIkXwjfWiAqDmjW5s2LO42UyYHo=";
 
     # The published tarball already ships a built dist/, so there is nothing
     # to compile; only install the pinned dependencies.
@@ -194,11 +186,12 @@ PY
     defaultThinkingLevel = "medium";
     # These packages are installed declaratively below. Pin their Pi sources to
     # the same versions so Pi does not run an online update check at startup.
+    # MCP is built into Pi since 1.0.0 (see ~/.pi/agent/mcp.json), so the former
+    # pi-mcp-adapter package is intentionally absent: it replaces built-in MCP.
     packages = [
       "npm:pi-web-access@0.22.0"
       "npm:@gotgenes/pi-permission-system@25.0.0"
       "npm:pi-zentui@0.18.1"
-      "npm:pi-mcp-adapter@5.1.0"
     ];
   };
 
@@ -222,7 +215,9 @@ PY
   # Shared with Codex and Claude Code: same secrets key, token file, and wrapper.
   secretsPath = "/home/wanmixc/configuration/secrets.json";
   notionMcpWrapper = import ./codex/notion-mcp-wrapper.nix { inherit pkgs secretsPath; };
-  mcpAdapterConfig = {
+  # Built-in MCP reads user-level servers from ~/.pi/agent/mcp.json, using the
+  # same mcpServers shape as other MCP clients.
+  mcpConfig = {
     mcpServers = {
       notion-api = {
         command = "${notionMcpWrapper}/bin/notion-mcp-server";
@@ -288,7 +283,7 @@ in
     "app.message.followUp" = "tab";
   };
   home.file."${piDir}/models.json".text = builtins.toJSON models;
-  home.file."${piDir}/mcp-adapter.json".text = builtins.toJSON mcpAdapterConfig;
+  home.file."${piDir}/mcp.json".text = builtins.toJSON mcpConfig;
 
   home.activation.validatePiNotionToken = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
     ${pkgs.python3}/bin/python3 ${./codex/notion_token.py} check ${secretsPath}
