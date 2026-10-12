@@ -262,6 +262,13 @@ in
     mv -f "$target/.package.json.tmp" "$target/package.json"
     mv -f "$target/.package-lock.json.tmp" "$target/package-lock.json"
     ${pkgs.nodejs}/bin/npm ci --ignore-scripts --omit=dev --prefix "$target"
+
+    # Pi aliases host-provided packages (typebox, @earendil-works/*) to its own
+    # copies when loading extensions, so copies installed under $target are
+    # never imported. pi-web-access still lists typebox under dependencies,
+    # which Pi reports at startup as a package that could bypass the extension
+    # loader. Move it to peerDependencies to match Pi's expectation.
+    ${pkgs.python3}/bin/python3 ${./pi/packages/fix-host-deps.py} "$target/node_modules"
   '';
   home.file.".pi/agent/AGENTS.md".source = ./agents/AGENTS.md;
   home.file.".pi/agent/extensions/pi-permission-system/config.json".text = builtins.toJSON permissionConfig;
