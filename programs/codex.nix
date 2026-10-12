@@ -4,11 +4,11 @@ let
 
   codexPkg = pkgs.stdenvNoCC.mkDerivation {
     pname = "codex";
-    version = "0.153.4";
+    version = "0.162.1";
 
     src = pkgs.fetchurl {
-      url = "https://github.com/openai/codex/releases/download/rust-v0.153.4/codex-package-x86_64-unknown-linux-musl.tar.gz";
-      sha256 = "sha256-qCIYfhokIMYcWSZyG/vYeHAe2VVHybsNTeRJiha6GCE=";
+      url = "https://github.com/openai/codex/releases/download/rust-v0.162.1/codex-package-x86_64-unknown-linux-musl.tar.gz";
+      sha256 = "sha256-pnb1ciquDYbL43ZDMvCOqx/didwKMAs61P+/SGEfo+M=";
     };
 
     nativeBuildInputs = [
@@ -31,6 +31,7 @@ let
     installPhase = ''
       mkdir -p $out
       cp -r bin codex-path codex-resources $out/
+      cp codex-package.json $out/
       chmod +x \
         $out/bin/codex \
         $out/bin/codex-code-mode-host \

@@ -31,8 +31,9 @@
     cat >> "$CODEx_CONFIG" <<'EOF'
 
 [mcp_servers.chrome-devtools]
-command = "bunx"
+command = "${pkgs.nodejs}/bin/npx"
 args = [
+  "-y",
   "chrome-devtools-mcp@latest",
   "--executablePath",
   "${pkgs.microsoft-edge}/bin/microsoft-edge",
