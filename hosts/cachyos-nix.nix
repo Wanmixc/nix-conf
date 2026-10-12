@@ -18,5 +18,7 @@
     ../programs/rmpc.nix
     ../programs/mpd.nix
     ../programs/claude-code.nix
+    ../programs/ollama.nix
+    ../programs/pi-coding-agent.nix
   ];
 }

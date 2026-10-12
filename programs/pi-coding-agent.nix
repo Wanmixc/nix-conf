@@ -181,9 +181,12 @@ PY
     quietStartup = true;
     enableInstallTelemetry = false;
     collapseChangelog = true;
-    defaultProvider = "mimo";
-    defaultModel = "deepseek/deepseek-v4.1-flash:free";
-    defaultThinkingLevel = "medium";
+    # defaultProvider = "mimo";
+    # defaultModel = "deepseek/deepseek-v4.1-flash:free";
+    # defaultThinkingLevel = "medium";
+    defaultProvider = "openai-codex";
+    defaultModel = "gpt-5.6-luna";
+    defaultThinkingLevel = "xhigh";
     # These packages are installed declaratively below. Pin their Pi sources to
     # the same versions so Pi does not run an online update check at startup.
     # MCP is built into Pi since 1.0.0 (see ~/.pi/agent/mcp.json), so the former
@@ -203,8 +206,29 @@ PY
         apiKey = "$MIMO_API_KEY";
         models = [
           {
-            id = "deepseek/deepseek-v4.1-flash:free";
-            name = "qdeepseek/deepseek-v4.1-flash:free";
+            id = "qwen/qwen3.8-max:free";
+            name = "qwen/qwen3.8-max:free";
+          }
+        ];
+      };
+      deeperseeker = {
+        # Local DeeperSeeker OpenAI-compatible API.
+        baseUrl = "http://localhost:4000/v1";
+        api = "openai-completions";
+        # Keep this aligned with DEEPSEEKER_API_KEY in DeeperSeeker's .env.
+        apiKey = "dseeker";
+        models = [
+          {
+            id = "instant";
+            name = "instant";
+          }
+          {
+            id = "vision";
+            name = "vision";
+          }
+          {
+            id = "expert";
+            name = "expert";
           }
         ];
       };
