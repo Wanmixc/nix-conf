@@ -176,6 +176,14 @@ PY
     cp ${ntfyConfig} "$out/config.json"
   '';
 
+  # Vendored from `herdr integration install pi`. Reports agent state to Herdr
+  # directly instead of relying on Herdr's screen-scraping detection, which
+  # misreads pi as idle while it is working.
+  herdrExtension = pkgs.runCommand "pi-herdr-extension" { } ''
+    mkdir -p "$out"
+    cp ${./pi/extensions/herdr}/herdr-agent-state.ts "$out/herdr-agent-state.ts"
+  '';
+
   settings = {
     theme = "dark";
     quietStartup = true;
@@ -296,6 +304,7 @@ in
   '';
   home.file.".pi/agent/AGENTS.md".source = ./agents/AGENTS.md;
   home.file.".pi/agent/extensions/pi-permission-system/config.json".text = builtins.toJSON permissionConfig;
+  home.file.".pi/agent/extensions/herdr-agent-state.ts".source = "${herdrExtension}/herdr-agent-state.ts";
   # Include reference documents, prompts, and scripts alongside each SKILL.md.
   home.file.".pi/agent/skills" = {
     source = ./agents/skills/superpowers;
