@@ -11,9 +11,6 @@
     herdr.url = "github:ogulcancelik/herdr/v0.7.4";
     herdr.inputs.nixpkgs.follows = "nixpkgs";
 
-    # Hermes Agent ships its own flake (uv2nix build pinned to nixos-unstable).
-    # Deliberately NOT `follows`-ing our nixpkgs: overriding its pin would break
-    # the uv2nix/pyproject build and lose upstream binary-cache hits.
     hermes-agent.url = "github:NousResearch/hermes-agent";
   };
 
@@ -27,8 +24,6 @@
             config.allowUnfree = true;
           };
 
-          # `herdr` is consumed directly by programs/herdr.nix; `inputs` and
-          # `system` are consumed by programs/hermes.nix (hermes-agent flake).
           extraSpecialArgs = { inherit herdr inputs system; };
 
           modules = [ module ];

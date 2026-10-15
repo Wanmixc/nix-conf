@@ -62,7 +62,10 @@ My work tasks live in Notion. You are my assistant for completing them.
   ```
 
 - Never modify a Notion task unless I explicitly request it.
-- If the canonical ID stops working, search `notion-api` for a non-archived data source titled `Tasks`, verify its schema, and report the replacement before using it.
+- Tasks live in two `Tasks` data sources; check both unless I name one:
+  - MyBudget: `6913a6c5-de6f-8214-aced-87a426c716bc`
+  - My Work Project: `2693a6c5-de6f-81c9-b948-000b2f6b69f0`
+- If either ID stops working, search `notion-api` for a non-archived data source titled `Tasks` under the same parent page, verify its schema, and report the replacement before using it.
 - After a task is done or committed, suggest the next unfinished task to work on.
 
 ## Herdr
