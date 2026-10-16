@@ -230,15 +230,15 @@ PY
     command = "codex"
 
     [[tabs]]
-    name = "dummy api"
+    name = "post-production"
 
     [[tabs.panes]]
-    label = "dummy api"
-    command = "cd ~/Extra/Development/dummy_api/target/release; ./dummy_api"
+    label = "start FE"
+    command = ""
 
     [[tabs.panes]]
-    label = "pg local"
-    command = "cd ~/Extra/Development/dummy_api; pg-start"
+    label = "start BE"
+    command = ""
     split = "right"
 
     [[tabs]]
