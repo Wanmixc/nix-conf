@@ -14,7 +14,8 @@ let
   notionMcpWrapper = import ./codex/notion-mcp-wrapper.nix { inherit pkgs secretsPath; };
 in
 {
-  home.packages = [ claudeCodePkg ];
+  # bun runs the Telegram channel plugin.
+  home.packages = [ claudeCodePkg pkgs.bun ];
 
   home.file.".claude/CLAUDE.md" = {
     source = ./agents/AGENTS.md;
@@ -45,6 +46,26 @@ in
     if [ "$current" != "$command" ]; then
       ${claudeCodePkg}/bin/claude mcp remove --scope user notion-api >/dev/null 2>&1 || true
       ${claudeCodePkg}/bin/claude mcp add --scope user notion-api -- "$command"
+    fi
+  '';
+
+  # Telegram channel: run `claude --channels plugin:telegram@claude-plugins-official`,
+  # then pair once with /telegram:access. The token is optional until a bot exists.
+  home.activation.claudeTelegram = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    plugin="telegram@claude-plugins-official"
+    installed="$HOME/.claude/plugins/installed_plugins.json"
+    if ! ${pkgs.jq}/bin/jq -e --arg p "$plugin" '.plugins | has($p)' "$installed" >/dev/null 2>&1; then
+      ${claudeCodePkg}/bin/claude plugin install --scope user "$plugin" \
+        || echo "warning: could not install $plugin; retry on the next switch" >&2
+    fi
+
+    token="$(${pkgs.jq}/bin/jq -r '.telegram_bot_token // empty' ${secretsPath} 2>/dev/null || true)"
+    if [ -n "$token" ]; then
+      state_dir="$HOME/.claude/channels/telegram"
+      mkdir -p -m 700 "$state_dir"
+      (umask 077 && printf 'TELEGRAM_BOT_TOKEN=%s\n' "$token" > "$state_dir/.env")
+    else
+      echo "telegram_bot_token is not set in ${secretsPath}; skipping Telegram channel token" >&2
     fi
   '';
 }
