@@ -33,7 +33,6 @@ let
     vim-dadbod-ui
     vim-dadbod-completion
     otter-nvim
-    cmp-tabnine
     nvim-autopairs
     comment-nvim
     nvim-ts-context-commentstring
@@ -155,7 +154,6 @@ in
       vim-dadbod-ui
       vim-dadbod-completion
       otter-nvim
-      cmp-tabnine
       nvim-autopairs
       comment-nvim
       nvim-ts-context-commentstring
