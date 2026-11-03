@@ -7,9 +7,9 @@
     ../programs/starship.nix
     ../programs/devtools.nix
     ../programs/claude-code.nix
-    ../programs/pi-coding-agent.nix
+    ../programs/pi
     ../programs/codex.nix
-    ../programs/nvim.nix
+    ../programs/nvim
     ../programs/herdr
     ../programs/herdr-plus.nix
     ../programs/herdr-recent-navigator.nix

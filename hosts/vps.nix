@@ -6,8 +6,8 @@
     ../programs/fish.nix
     ../programs/starship.nix
     ../programs/devtools.nix
-    ../programs/pi-coding-agent.nix
-    ../programs/nvim.nix
+    ../programs/pi
+    ../programs/nvim
     ../programs/herdr
     ../programs/herdr-plus.nix
     ../programs/herdr-recent-navigator.nix

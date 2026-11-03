@@ -9,7 +9,7 @@
     ../programs/devtools.nix
     ../programs/codex.nix
     ../programs/desktop.nix
-    ../programs/nvim.nix
+    ../programs/nvim
     ../programs/herdr
     ../programs/herdr-plus.nix
     ../programs/herdr-recent-navigator.nix
@@ -19,6 +19,6 @@
     ../programs/mpd.nix
     ../programs/claude-code.nix
     ../programs/ollama.nix
-    ../programs/pi-coding-agent.nix
+    ../programs/pi
   ];
 }

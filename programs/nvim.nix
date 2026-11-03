@@ -1,4 +1,0 @@
-{ ... }:
-{
-  imports = [ ./nvim/default.nix ];
-}
