@@ -53,7 +53,7 @@ if not isinstance(token, str) or token == "":
     raise SystemExit(0)
 
 print("username=oauth2")
-print(f"******")
+print(f"password={token}")
 INNER_PY
 # END github-credential-helper
 """.replace("__SECRETS_PATH__", secrets_path)
