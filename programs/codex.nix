@@ -1,7 +1,5 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, secretsPath, ... }:
 let
-  secretsPath = "/home/wanmixc/configuration/secrets.json";
-
   codexPkg = pkgs.stdenvNoCC.mkDerivation {
     pname = "codex";
     version = "0.162.1";

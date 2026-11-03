@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
-    nixpkgs-yt-dlp.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
@@ -17,6 +17,11 @@
   outputs = { nixpkgs, home-manager, herdr, ... }@inputs:
     let
       system = "x86_64-linux";
+      secretsPath = "/home/wanmixc/configuration/secrets.json";
+      pkgsUnstable = import inputs.nixpkgs-unstable {
+        inherit system;
+        config.allowUnfree = true;
+      };
       mkHome = module:
         home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs {
@@ -24,7 +29,7 @@
             config.allowUnfree = true;
           };
 
-          extraSpecialArgs = { inherit herdr inputs system; };
+          extraSpecialArgs = { inherit herdr inputs system secretsPath pkgsUnstable; };
 
           modules = [ module ];
         };

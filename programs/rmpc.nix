@@ -1,9 +1,5 @@
-{ config, inputs, pkgs, ... }:
+{ config, pkgs, pkgsUnstable, ... }:
 let
-  ytPkgs = import inputs.nixpkgs-yt-dlp {
-    system = pkgs.stdenv.hostPlatform.system;
-    config.allowUnfree = true;
-  };
   youtubeCacheDir = "${config.xdg.userDirs.music}/.rmpc-youtube";
   rmpcConfig = builtins.replaceStrings
     [
@@ -19,12 +15,12 @@ in
 {
   home.packages = with pkgs; [
     ffmpeg
-    ytPkgs.yt-dlp
+    pkgsUnstable.yt-dlp
   ];
 
   programs.rmpc = {
     enable = true;
-    package = ytPkgs.rmpc;
+    package = pkgsUnstable.rmpc;
     config = rmpcConfig;
   };
 

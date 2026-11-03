@@ -1,7 +1,5 @@
-{ pkgs, lib, ... }:
+{ pkgs, lib, secretsPath, ... }:
 let
-  secretsPath = "/home/wanmixc/configuration/secrets.json";
-
   claudeCodePkg = pkgs.claude-code.overrideAttrs (_oldAttrs: {
     version = "2.1.286";
 

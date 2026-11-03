@@ -1,10 +1,4 @@
-{ inputs, pkgs, ... }:
-let
-  unstablePkgs = import inputs.nixpkgs-yt-dlp {
-    system = pkgs.stdenv.hostPlatform.system;
-    config.allowUnfree = true;
-  };
-in
+{ pkgs, pkgsUnstable, ... }:
 {
   home.packages = with pkgs; [
     bat
@@ -21,7 +15,7 @@ in
     speedtest-cli
     (python3.withPackages (pythonPackages: [ pythonPackages.mutagen ]))
     croc
-    unstablePkgs.sshm
+    pkgsUnstable.sshm
   ];
 
   programs.direnv.enable = true;
