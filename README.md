@@ -50,17 +50,18 @@ Neovim policy:
 │   ├── starship.nix
 │   ├── xdg.nix
 │   ├── devtools.nix
+│   ├── env/
+│   │   ├── default.nix
+│   │   ├── github.nix
+│   │   ├── mimo.nix
+│   │   ├── paste.nix
+│   │   └── supermemory.nix
 │   ├── desktop.nix
 │   ├── claude-code.nix
 │   ├── codex.nix
-│   ├── deepseek.nix
 │   ├── hermes.nix
-│   ├── pi-coding-agent.nix
-│   ├── jcode.nix
 │   ├── herdr-plus.nix
 │   ├── ollama.nix
-│   ├── nvim.nix
-│   ├── tmux.nix
 │   ├── yazi.nix
 │   ├── fastfetch.nix
 │   ├── rmpc.nix
@@ -70,17 +71,19 @@ Neovim policy:
 │   │   ├── config/
 │   │   └── keymapconfig/
 │   ├── starship/
-│   ├── tmux/
 │   ├── fastfetch/
 │   ├── rmpc/
 │   ├── codex/
 │   │   ├── plugins/
 │   │   └── skills/
-│   ├── deepseek/
-│   │   └── skills/
 │   └── pi/
-│       ├── packages/
-│       └── skills/
+│       ├── activation.nix
+│       ├── config.nix
+│       ├── extensions.nix
+│       ├── package.nix
+│       └── packages/
+│           ├── package.json
+│           └── package-lock.json
 └── secrets.json  # local only, ignored by git
 ```
 
@@ -113,11 +116,11 @@ If present, it may contain:
 
 If the file is absent, the configuration still evaluates successfully. A Home Manager switch for a machine with Codex fails before the write boundary when `notion_token` is absent or empty.
 
-The current runtime generator reads this file from `/home/wanmixc/configuration/secrets.json`. If the repository is cloned elsewhere, update `secretsPath` in `programs/env.nix` before relying on runtime credentials.
+The current runtime generator reads this file from `/home/wanmixc/configuration/secrets.json`. If the repository is cloned elsewhere, update `secretsPath` in `flake.nix` before relying on runtime credentials.
 
 ## Pi Coding Agent
 
-`pi-coding-agent` is imported by all three host targets. Its Mimo provider uses the generated `MIMO_API_KEY` environment variable. The Pi extensions are installed declaratively from `programs/pi/packages/` and their exact versions are pinned in `programs/pi-coding-agent.nix`, so Pi does not perform an online package update check at startup. Update the package manifest, lockfile, and Pi version pins together when upgrading them.
+`pi-coding-agent` is imported by all three host targets through `programs/pi/default.nix`. Its Mimo provider uses the generated `MIMO_API_KEY` environment variable. The Pi extensions are installed declaratively from `programs/pi/packages/` and their exact versions are pinned in `programs/pi/package.nix`, so Pi does not perform an online package update check at startup. Update the package manifest, lockfile, and Pi version pins together when upgrading them.
 
 ### Long-task ntfy notifications
 
@@ -127,7 +130,7 @@ The local Pi extension sends one notification when an interactive task finishes 
 
 Add `ntfy_url` (the full HTTPS topic URL) to your local `secrets.json`, preserving its other keys. No token is used. Restrict access with `chmod 600 secrets.json`. The extension reads this file at notification time, so URL changes need no rebuild. Neither the URL nor the file contents are evaluated by Nix or copied into the Nix store. An unauthenticated topic is not private from anyone who knows its URL; use an unguessable topic and do not share it.
 
-Edit `autoChatName.enable` and `ntfyNotifications.enable` independently in `programs/pi-coding-agent.nix`; the extension is installed when either feature is enabled. Change `thresholdSeconds` (non-negative integer seconds) or the runtime `secretsFile` path there as well. Apply with your usual Home Manager switch (VPS: `home-manager switch --flake .#wanmixc-vps`), then restart Pi or run `/reload`. Ensure the new extension files are Git-tracked before using a Git-backed flake; Git flakes exclude untracked files.
+Edit `autoChatName.enable` and `ntfyNotifications.enable` independently in `programs/pi/extensions.nix`; the extension is installed when either feature is enabled. Change `thresholdSeconds` (non-negative integer seconds) or the runtime `secretsFile` path there as well. Apply with your usual Home Manager switch (VPS: `home-manager switch --flake .#wanmixc-vps`), then restart Pi or run `/reload`. Ensure the new extension files are Git-tracked before using a Git-backed flake; Git flakes exclude untracked files.
 
 Notifications include the server hostname, folder (`~` for your home directory), current Pi chat name, duration, and status. The title is `Pi finished — <server>` or `Pi error — <server>`. Name your chat with `/name`; unnamed chats show `Unnamed chat`, never a prompt-derived fallback. Folder paths and chat names are sent to ntfy, but prompts, code, and raw errors are not. Metadata is kept on one line per field and truncated to 240 characters per field. Delivery runs in the background with a five-second deadline, without redirects or retries. Missing/invalid configuration or failed delivery produces a generic local warning and does not fail the task. Cancelling a retry with the configured interrupt key (normally Esc) also stays silent.
 
@@ -226,9 +229,7 @@ home-manager switch --impure --flake .#wanmixc-vps
 
 ## Notes
 
-- `programs/tmux/tmux.nix` is preserved and imported through [programs/tmux.nix](programs/tmux.nix), but it is not currently imported by a host profile.
 - Desktop-only integrations such as Edge and Codex Chrome DevTools MCP are enabled through [programs/desktop.nix](programs/desktop.nix) and currently imported by `cachyos-nix`.
-- DeepSeek is packaged through a binary release flow in [programs/deepseek.nix](programs/deepseek.nix), but it is not currently imported by a host profile.
 - Claude Code is packaged in [programs/claude-code.nix](programs/claude-code.nix) by overriding `pkgs.claude-code` to the pinned upstream binary version.
 - Herdr itself is configured in [programs/herdr/default.nix](programs/herdr/default.nix), with raw TOML config in [programs/herdr/config.toml](programs/herdr/config.toml). Herdr and Herdr Plus are imported by all three host profiles.
 - Herdr Plus is installed and registered by [programs/herdr-plus.nix](programs/herdr-plus.nix).
