@@ -20,8 +20,8 @@
   systemd.user.services.mpdris2-rs = {
     Unit = {
       Description = "Music Player Daemon MPRIS bridge";
-      Wants = [ "mpd.service" ];
-      After = [ "mpd.service" ];
+      Wants = [ "mpd.socket" ];
+      After = [ "mpd.socket" ];
     };
     Service = {
       Type = "dbus";
