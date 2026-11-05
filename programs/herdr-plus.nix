@@ -246,6 +246,33 @@ PY
     command = "bat ~/configuration/programs/nvim/CHEATSHEET.md"
   '';
 
+  xdg.configFile."herdr/plugins/config/${pluginId}/projects/IntegrationPKBAPI.toml".text = ''
+    name = "IntegrationPKBAPI"
+    description = "IntegrationPKBAPI project"
+    group = "Dev"
+    working_dir = "~/Extra/Development/IntegrationPKBAPI"
+
+    [[tabs]]
+    name = "Nvim"
+    command = "nvim"
+
+    [[tabs]]
+    name = "Dev Server"
+    command = "OPENSSL_CONF=\"$PWD/sql2014-openssl.cnf\" dotnet run --urls http://localhost:5000"
+
+    [[tabs]]
+    name = "git"
+    command = "gitui"
+
+    [[tabs]]
+    name = "atac"
+    command = "atac"
+
+    [[tabs]]
+    name = "codex"
+    command = "codex"
+  '';
+
   xdg.configFile."herdr/plugins/config/${pluginId}/projects/dummy_api_project.toml".text = ''
     name = "dummy_api_project"
     description = "Dummy API Project"
