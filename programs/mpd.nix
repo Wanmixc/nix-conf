@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 {
   services.mpd = {
     enable = true;
@@ -15,5 +15,20 @@
         name "PulseAudio / PipeWire"
       }
     '';
+  };
+
+  systemd.user.services.mpdris2-rs = {
+    Unit = {
+      Description = "Music Player Daemon MPRIS bridge";
+      Wants = [ "mpd.socket" ];
+      After = [ "mpd.socket" ];
+    };
+    Service = {
+      Type = "dbus";
+      BusName = "org.mpris.MediaPlayer2.mpd";
+      ExecStart = "${pkgs.mpdris2-rs}/bin/mpdris2-rs --host /run/user/1000/mpd/socket";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = [ "default.target" ];
   };
 }

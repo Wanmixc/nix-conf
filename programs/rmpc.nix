@@ -14,6 +14,7 @@ let
 in
 {
   home.packages = with pkgs; [
+    cava
     ffmpeg
     pkgsUnstable.yt-dlp
   ];
