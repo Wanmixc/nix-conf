@@ -64,6 +64,7 @@ let
     ;
 
   dotnetSdk = pkgs.dotnetCorePackages.sdk_10_0;
+  roslynRuntime = pkgs.dotnetCorePackages.runtime_9_0;
 in
 {
   xdg.configFile = {
@@ -112,6 +113,9 @@ in
       "--set"
       "DOTNET_ROOT"
       "${dotnetSdk}/share/dotnet"
+      "--set"
+      "ROSLYN_DOTNET_ROOT"
+      "${roslynRuntime}/share/dotnet"
     ];
 
     # Load the visible ~/.config/nvim/init.lua so the repo folder is the

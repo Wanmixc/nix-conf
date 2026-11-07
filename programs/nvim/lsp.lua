@@ -109,6 +109,11 @@ local function setup_roslyn_ls()
     local config = vim.tbl_deep_extend("force", vim.deepcopy(vim.lsp.config.roslyn_ls), {
       capabilities = capabilities,
       root_dir = root_dir,
+      -- The nixpkgs launcher resets DOTNET_ROOT from PATH; the apphost prefers this x64 override.
+      cmd_env = vim.env.ROSLYN_DOTNET_ROOT and {
+        DOTNET_ROOT = vim.env.ROSLYN_DOTNET_ROOT,
+        DOTNET_ROOT_X64 = vim.env.ROSLYN_DOTNET_ROOT,
+      } or {},
     })
 
     vim.api.nvim_buf_call(bufnr, function()
