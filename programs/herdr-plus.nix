@@ -130,6 +130,23 @@ PY
     command = "cd {{.WorkDir}} && exec $SHELL"
   '';
 
+  # Quick Action: configure direnv and allow it in the pane that launched the action.
+  xdg.configFile."herdr/plugins/config/${pluginId}/quick-actions/enable-direnv-flake.toml".text = ''
+    name = "Enable direnv flake"
+    description = "Add use flake to .envrc and load the environment"
+    type = "command"
+    command = """
+      cd "{{.WorkDir}}" &&
+      touch .envrc &&
+      if ! grep -qxF 'use flake' .envrc; then
+        printf '%s\\n' 'use flake' >> .envrc
+      fi &&
+      git -C "{{.WorkDir}}" add -N "flake.nix" &&
+      herdr pane send-text "{{.PaneId}}" "direnv allow" &&
+      herdr pane send-keys "{{.PaneId}}" enter
+    """
+  '';
+
   # Quick Action: restart the my_budget frontend/backend server panes. It
   # targets the labels created by the my_budget project layout below.
   xdg.configFile."herdr/plugins/config/${pluginId}/quick-actions/restart-my-budget-stack.toml".text = ''
