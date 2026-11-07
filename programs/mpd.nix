@@ -19,16 +19,16 @@
 
   systemd.user.services.mpdris2-rs = {
     Unit = {
-      Description = "Music Player Daemon MPRIS bridge";
+      Description = "MPD MPRIS bridge";
       Wants = [ "mpd.socket" ];
       After = [ "mpd.socket" ];
     };
     Service = {
       Type = "dbus";
       BusName = "org.mpris.MediaPlayer2.mpd";
-      ExecStart = "${pkgs.mpdris2-rs}/bin/mpdris2-rs --host /run/user/1000/mpd/socket";
+      ExecStart = "${pkgs.mpdris2-rs}/bin/mpdris2-rs --host %t/mpd/socket --no-notification";
       Restart = "on-failure";
     };
-    Install.WantedBy = [ "default.target" ];
+    Install.WantedBy = [ "graphical-session.target" ];
   };
 }
