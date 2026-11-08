@@ -1,6 +1,6 @@
 { pkgs, secretsPath }:
 let
-  notionMcpPkg = pkgs.callPackage ./notion-mcp-server.nix { };
+  notionMcpPkg = pkgs.notion-mcp-server;
 in
 pkgs.writeShellScriptBin "notion-mcp-server" ''
   set -euo pipefail

@@ -35,6 +35,17 @@
         };
     in
     {
+      packages.${system} =
+        let
+          pkgs = import nixpkgs {
+            inherit system;
+            overlays = [ (import ./pkgs) ];
+          };
+        in
+        {
+          inherit (pkgs) neossh notion-mcp-server pi-coding-agent;
+        };
+
       homeConfigurations = {
         "wanmixc-cachyos-nix" = mkHome ./hosts/cachyos-nix.nix;
         "wanmixc-wsl" = mkHome ./hosts/wsl.nix;

@@ -1,24 +1,7 @@
 {
   imports = [
-    ../programs/base.nix
-    ../programs/env.nix
-    ../programs/git.nix
-    ../programs/fish.nix
-    ../programs/starship.nix
-    ../programs/xdg.nix
-    ../programs/devtools.nix
-    ../programs/codex.nix
-    ../programs/desktop.nix
-    ../programs/nvim
-    ../programs/herdr
-    ../programs/herdr-plus.nix
-    ../programs/herdr-recent-navigator.nix
-    ../programs/yazi.nix
-    ../programs/fastfetch.nix
-    ../programs/rmpc.nix
-    ../programs/mpd.nix
-    ../programs/claude-code.nix
-    ../programs/ollama.nix
-    ../programs/pi
+    ../profiles/common.nix
+    ../profiles/agents.nix
+    ../profiles/desktop.nix
   ];
 }

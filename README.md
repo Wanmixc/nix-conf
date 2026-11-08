@@ -6,7 +6,7 @@ Personal multi-machine [Home Manager](https://nix-community.github.io/home-manag
 - `wsl`
 - `vps`
 
-This repository uses a mostly flat `programs/` layout: each app or concern has a small `.nix` module, with larger tools keeping their supporting config in a matching subdirectory.
+This repository uses a mostly flat `programs/` layout: each app or concern has a small `.nix` module, with larger tools keeping their supporting config in a matching subdirectory. Hosts compose modules through `profiles/`, and locally built packages live in `pkgs/` and are added to `pkgs` through an overlay.
 
 ## Host Targets
 
@@ -22,7 +22,7 @@ AI tool policy:
 
 - `cachyos-nix` -> `codex`, `claude-code`, `ollama`, `pi-coding-agent`
 - `wsl` -> `codex`, `claude-code`, `pi-coding-agent`
-- `vps` -> `claude-code`, `pi-coding-agent`
+- `vps` -> `pi-coding-agent`
 - Claude Code is split into `programs/claude-code.nix` so it can be imported only on selected machines.
 
 Neovim policy:
@@ -42,6 +42,15 @@ Neovim policy:
 │   ├── cachyos-nix.nix
 │   ├── wsl.nix
 │   └── vps.nix
+├── profiles/
+│   ├── common.nix   # every host
+│   ├── agents.nix   # codex, claude-code
+│   └── desktop.nix  # desktop apps, xdg, mpd, rmpc, ollama
+├── pkgs/
+│   ├── default.nix  # overlay
+│   ├── neossh.nix
+│   ├── notion-mcp-server/
+│   └── pi-coding-agent/
 ├── programs/
 │   ├── base.nix
 │   ├── env.nix
@@ -120,7 +129,7 @@ The current runtime generator reads this file from `/home/wanmixc/configuration/
 
 ## Pi Coding Agent
 
-`pi-coding-agent` is imported by all three host targets through `programs/pi/default.nix`. Its Mimo provider uses the generated `MIMO_API_KEY` environment variable. The Pi extensions are installed declaratively from `programs/pi/packages/` and their exact versions are pinned in `programs/pi/package.nix`, so Pi does not perform an online package update check at startup. Update the package manifest, lockfile, and Pi version pins together when upgrading them.
+`pi-coding-agent` is imported by all three host targets through `programs/pi/default.nix`. Its Mimo provider uses the generated `MIMO_API_KEY` environment variable. The Pi extensions are installed declaratively from `programs/pi/packages/` and their exact versions are pinned in `programs/pi/config.nix`, so Pi does not perform an online package update check at startup. Update the package manifest, lockfile, and Pi version pins together when upgrading them.
 
 ### Long-task ntfy notifications
 
@@ -173,20 +182,19 @@ After changing `secrets.json`, run `home-manager switch` for the target machine 
 Current machine-specific imports:
 
 ```text
-cachyos-nix:
-  base env git fish starship xdg devtools codex desktop nvim herdr
-  herdr-plus yazi fastfetch rmpc mpd claude-code ollama pi-coding-agent
+common (all hosts):
+  base env git fish starship devtools pi nvim herdr herdr-plus
+  herdr-recent-navigator yazi fastfetch
 
-wsl:
-  base env git fish starship devtools claude-code pi-coding-agent
-  codex nvim herdr herdr-plus yazi fastfetch
+agents:  codex claude-code
+desktop: xdg desktop rmpc mpd ollama
 
-vps:
-  base env git fish starship devtools claude-code pi-coding-agent nvim herdr
-  herdr-plus yazi fastfetch
+cachyos-nix: common agents desktop
+wsl:         common agents
+vps:         common
 ```
 
-To enable or disable a tool per machine, add or remove its module in the target file under `hosts/`.
+To add a tool everywhere, import it in `profiles/common.nix`. To enable it on one machine, import it in that host file under `hosts/` or in a profile that host uses.
 
 ## Usage
 

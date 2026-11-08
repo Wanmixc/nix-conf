@@ -1,4 +1,4 @@
-{ pkgs, pkgsUnstable, ... }:
+{ pkgs, ... }:
 {
   home.packages = with pkgs; [
     bat
@@ -15,7 +15,7 @@
     speedtest-cli
     (python3.withPackages (pythonPackages: [ pythonPackages.mutagen ]))
     croc
-    (pkgs.callPackage ./neossh/package.nix { })
+    neossh
   ];
 
   programs.direnv.enable = true;
