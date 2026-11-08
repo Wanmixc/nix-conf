@@ -172,7 +172,7 @@ let
     '';
   };
 
-  notionMcpWrapper = import ./codex/notion-mcp-wrapper.nix { inherit pkgs secretsPath; };
+  notionMcpWrapper = import ../notion/notion-mcp-wrapper.nix { inherit pkgs secretsPath; };
 
   codexPluginsMarketplace = builtins.toFile "codex-marketplace.json" ''
     {
@@ -223,16 +223,16 @@ in
   ];
 
   home.file.".codex/AGENTS.md" = {
-    source = ./agents/AGENTS.md;
+    source = ../AGENTS.md;
     force = true;
   };
 
   home.activation.validateNotionToken = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
-    ${pkgs.python3}/bin/python3 ${./codex/notion_token.py} check ${secretsPath}
+    ${pkgs.python3}/bin/python3 ${../notion/notion_token.py} check ${secretsPath}
   '';
 
   home.activation.codexSkills = lib.hm.dag.entryAfter [ "linkGeneration" ] ''
-    for root in ${./agents/skills} ${./codex/skills}; do
+    for root in ${../skills} ${./skills}; do
       while IFS= read -r src; do
         rel="''${src#$root/}"
         install -Dm644 "$src" "$HOME/.codex/skills/$rel"
@@ -249,10 +249,10 @@ in
       "$HOME/.codex/plugins/cache/wanmixc-local/supermemory"
 
     while IFS= read -r src; do
-      rel="''${src#${./codex/plugins}/}"
+      rel="''${src#${./plugins}/}"
       install -Dm644 "$src" "$HOME/plugins/$rel"
       install -Dm644 "$src" "$HOME/.agents/plugins/plugins/$rel"
-    done < <(find ${./codex/plugins} -type f)
+    done < <(find ${./plugins} -type f)
 
     install -Dm644 ${codexPluginsMarketplace} "$HOME/.agents/plugins/marketplace.json"
     install -Dm644 ${codexPluginsMarketplace} "$HOME/.agents/plugins/api_marketplace.json"
@@ -287,8 +287,8 @@ in
     token_file="$runtime_env_dir/notion-token"
     config_file="$HOME/.codex/config.toml"
 
-    ${pkgs.python3}/bin/python3 ${./codex/notion_token.py} write ${secretsPath} "$token_file"
-    ${pkgs.python3}/bin/python3 ${./codex/reconcile_notion_config.py} \
+    ${pkgs.python3}/bin/python3 ${../notion/notion_token.py} write ${secretsPath} "$token_file"
+    ${pkgs.python3}/bin/python3 ${./reconcile_notion_config.py} \
       "$config_file" \
       "${notionMcpWrapper}/bin/notion-mcp-server"
   '';

@@ -9,27 +9,27 @@ let
     };
   });
 
-  notionMcpWrapper = import ./codex/notion-mcp-wrapper.nix { inherit pkgs secretsPath; };
+  notionMcpWrapper = import ./notion/notion-mcp-wrapper.nix { inherit pkgs secretsPath; };
 in
 {
   home.packages = [ claudeCodePkg ];
 
   home.file.".claude/CLAUDE.md" = {
-    source = ./agents/AGENTS.md;
+    source = ./AGENTS.md;
     force = true;
   };
   # Superpowers skills come from the Claude Code plugin, so only shared extras here.
   home.file.".claude/skills/commit-message-id" = {
-    source = ./agents/skills/commit-message-id;
+    source = ./skills/commit-message-id;
     recursive = true;
   };
   home.file.".claude/skills/herdr" = {
-    source = ./agents/skills/herdr;
+    source = ./skills/herdr;
     recursive = true;
   };
 
   home.activation.validateClaudeNotionToken = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
-    ${pkgs.python3}/bin/python3 ${./codex/notion_token.py} check ${secretsPath}
+    ${pkgs.python3}/bin/python3 ${./notion/notion_token.py} check ${secretsPath}
   '';
 
   home.activation.claudeNotion = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
@@ -37,7 +37,7 @@ in
     config_file="$HOME/.claude.json"
     command="${notionMcpWrapper}/bin/notion-mcp-server"
 
-    ${pkgs.python3}/bin/python3 ${./codex/notion_token.py} write ${secretsPath} "$token_file"
+    ${pkgs.python3}/bin/python3 ${./notion/notion_token.py} write ${secretsPath} "$token_file"
 
     current="$(${pkgs.jq}/bin/jq -r '.mcpServers["notion-api"].command // empty' "$config_file" 2>/dev/null || true)"
     if [ "$current" != "$command" ]; then

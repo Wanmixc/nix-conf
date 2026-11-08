@@ -19,7 +19,7 @@ skills.
   Refresh after plugin updates with
   `rsync -a --delete --chmod=u+w ~/.claude/plugins/cache/claude-plugins-official/superpowers/<version>/skills/ programs/agents/skills/superpowers/`.
   Currently 6.4.1.
-- `programs/codex/skills/`: Codex-only skills.
+- `programs/agents/codex/skills/`: Codex-only skills.
 - `secrets.json`: local secrets, gitignored. Never commit it.
 
 ## Rules

@@ -1,6 +1,6 @@
 {
   imports = [
-    ../programs/codex.nix
-    ../programs/claude-code.nix
+    ../programs/agents/codex
+    ../programs/agents/claude-code.nix
   ];
 }

@@ -1,9 +1,9 @@
 {
   imports = [
-    ../programs/xdg.nix
-    ../programs/desktop.nix
-    ../programs/rmpc.nix
-    ../programs/mpd.nix
-    ../programs/ollama.nix
+    ../programs/desktop/xdg.nix
+    ../programs/desktop/apps.nix
+    ../programs/media/rmpc
+    ../programs/media/mpd.nix
+    ../programs/agents/ollama.nix
   ];
 }

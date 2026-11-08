@@ -10,7 +10,7 @@ let
       "address: \"/run/user/1000/mpd/socket\","
       "cache_dir: Some(\"${youtubeCacheDir}\"),"
     ]
-    (builtins.readFile ./rmpc/config.ron);
+    (builtins.readFile ./config.ron);
 in
 {
   home.packages = with pkgs; [
@@ -25,5 +25,5 @@ in
     config = rmpcConfig;
   };
 
-  xdg.configFile."rmpc/themes/theme.ron".source = ./rmpc/theme.ron;
+  xdg.configFile."rmpc/themes/theme.ron".source = ./theme.ron;
 }

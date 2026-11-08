@@ -1,7 +1,7 @@
 # herdr Cheatsheet
 
 Terminal multiplexer. Keys below reflect **your** config in
-[`programs/herdr/config.toml`](../programs/herdr/config.toml).
+[`programs/herdr/config.toml`](config.toml).
 
 > **Prefix = `Ctrl+a`** — press it, release, then press the next key.
 > Notation: `⟨p⟩ x` means "prefix, then `x`".
@@ -26,8 +26,8 @@ Terminal multiplexer. Keys below reflect **your** config in
 
 Configured via `[[keys.command]]` in `config.toml`; Herdr Plus and Recent
 Navigator are installed declaratively by
-[`programs/herdr-plus.nix`](../programs/herdr-plus.nix) and
-[`programs/herdr-recent-navigator.nix`](../programs/herdr-recent-navigator.nix).
+[`programs/herdr/plus.nix`](plus.nix) and
+[`programs/herdr/recent-navigator.nix`](recent-navigator.nix).
 
 ## Tabs
 

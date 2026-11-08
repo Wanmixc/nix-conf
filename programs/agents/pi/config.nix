@@ -64,7 +64,7 @@ let
   permissionConfig = builtins.fromJSON (builtins.readFile ./permission-config.json);
 
   # Shared with Codex and Claude Code: same secrets key, token file, and wrapper.
-  notionMcpWrapper = import ../codex/notion-mcp-wrapper.nix { inherit pkgs secretsPath; };
+  notionMcpWrapper = import ../notion/notion-mcp-wrapper.nix { inherit pkgs secretsPath; };
   # Built-in MCP reads user-level servers from ~/.pi/agent/mcp.json, using the
   # same mcpServers shape as other MCP clients.
   mcpConfig = {
@@ -76,18 +76,18 @@ let
   };
 in
 {
-  home.file.".pi/agent/AGENTS.md".source = ../agents/AGENTS.md;
+  home.file.".pi/agent/AGENTS.md".source = ../AGENTS.md;
   home.file.".pi/agent/extensions/pi-permission-system/config.json".text = builtins.toJSON permissionConfig;
   # Include reference documents, prompts, and scripts alongside each SKILL.md.
   home.file.".pi/agent/skills" = {
-    source = ../agents/skills/superpowers;
+    source = ../skills/superpowers;
     recursive = true;
   };
   home.file.".pi/agent/skills/commit-message-id" = {
-    source = ../agents/skills/commit-message-id;
+    source = ../skills/commit-message-id;
     recursive = true;
   };
-  home.file.".pi/agent/skills/herdr/SKILL.md".source = ../agents/skills/herdr/SKILL.md;
+  home.file.".pi/agent/skills/herdr/SKILL.md".source = ../skills/herdr/SKILL.md;
 
   home.file."${piDir}/settings.json".text = builtins.toJSON settings;
   home.file."${piDir}/keybindings.json".text = builtins.toJSON {

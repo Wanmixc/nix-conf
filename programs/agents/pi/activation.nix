@@ -34,10 +34,10 @@
   '';
 
   home.activation.validatePiNotionToken = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
-    ${pkgs.python3}/bin/python3 ${../codex/notion_token.py} check ${secretsPath}
+    ${pkgs.python3}/bin/python3 ${../notion/notion_token.py} check ${secretsPath}
   '';
 
   home.activation.piNotion = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    ${pkgs.python3}/bin/python3 ${../codex/notion_token.py} write ${secretsPath} "$HOME/.config/runtime-env/notion-token"
+    ${pkgs.python3}/bin/python3 ${../notion/notion_token.py} write ${secretsPath} "$HOME/.config/runtime-env/notion-token"
   '';
 }

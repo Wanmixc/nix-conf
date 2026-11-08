@@ -6,7 +6,7 @@ Personal multi-machine [Home Manager](https://nix-community.github.io/home-manag
 - `wsl`
 - `vps`
 
-This repository uses a mostly flat `programs/` layout: each app or concern has a small `.nix` module, with larger tools keeping their supporting config in a matching subdirectory. Hosts compose modules through `profiles/`, and locally built packages live in `pkgs/` and are added to `pkgs` through an overlay.
+`programs/` groups modules by area (`shell/`, `herdr/`, `agents/`, `media/`, `desktop/`). A module with supporting files is a directory with `default.nix`; a single-file module is a plain `.nix` file. Hosts compose modules through `profiles/`, and locally built packages live in `pkgs/` and are added to `pkgs` through an overlay.
 
 ## Host Targets
 
@@ -23,7 +23,7 @@ AI tool policy:
 - `cachyos-nix` -> `codex`, `claude-code`, `ollama`, `pi-coding-agent`
 - `wsl` -> `codex`, `claude-code`, `pi-coding-agent`
 - `vps` -> `pi-coding-agent`
-- Claude Code is split into `programs/claude-code.nix` so it can be imported only on selected machines.
+- Claude Code is split into `programs/agents/claude-code.nix` so it can be imported only on selected machines.
 
 Neovim policy:
 
@@ -53,46 +53,30 @@ Neovim policy:
 │   └── pi-coding-agent/
 ├── programs/
 │   ├── base.nix
-│   ├── env.nix
-│   ├── git.nix
-│   ├── fish.nix
-│   ├── starship.nix
-│   ├── xdg.nix
 │   ├── devtools.nix
-│   ├── env/
-│   │   ├── default.nix
-│   │   ├── github.nix
-│   │   ├── mimo.nix
-│   │   ├── paste.nix
-│   │   └── supermemory.nix
-│   ├── desktop.nix
-│   ├── claude-code.nix
-│   ├── codex.nix
-│   ├── hermes.nix
-│   ├── herdr-plus.nix
-│   ├── ollama.nix
-│   ├── yazi.nix
-│   ├── fastfetch.nix
-│   ├── rmpc.nix
-│   ├── mpd.nix
-│   ├── herdr/
+│   ├── git.nix
+│   ├── env/         # runtime env from secrets.json
 │   ├── nvim/
-│   │   ├── config/
-│   │   └── keymapconfig/
-│   ├── starship/
-│   ├── fastfetch/
-│   ├── rmpc/
-│   ├── codex/
-│   │   ├── plugins/
-│   │   └── skills/
-│   └── pi/
-│       ├── activation.nix
-│       ├── config.nix
-│       ├── extensions.nix
-│       ├── package.nix
-│       └── packages/
-│           ├── package.json
-│           └── package-lock.json
+│   ├── shell/       # fish, yazi, starship/, fastfetch/
+│   ├── herdr/       # default.nix, plus.nix, recent-navigator.nix
+│   ├── agents/
+│   │   ├── AGENTS.md
+│   │   ├── skills/
+│   │   ├── claude-code.nix
+│   │   ├── hermes.nix
+│   │   ├── ollama.nix
+│   │   ├── notion/  # shared Notion MCP wrapper and token helper
+│   │   ├── codex/
+│   │   │   ├── plugins/
+│   │   │   └── skills/
+│   │   └── pi/
+│   │       ├── activation.nix
+│   │       ├── config.nix
+│   │       ├── extensions.nix
+│   │       ├── package.nix
+│   │       └── packages/
+│   ├── media/       # mpd, rmpc/
+│   └── desktop/     # apps.nix, xdg.nix
 └── secrets.json  # local only, ignored by git
 ```
 
@@ -115,7 +99,7 @@ If present, it may contain:
 
 `github_token` is optional and enables authenticated GitHub HTTPS operations through a runtime credential helper generated under `~/.config/runtime-env/github-credential-helper`.
 
-`notion_token` is required for machines that import `programs/codex.nix`. Home Manager validates that it is a non-empty string before making changes, writes it at activation time to the mode-`0600` file `~/.config/runtime-env/notion-token`, and configures Codex with the managed `notion-api` MCP server. The token is not written to the Nix store or `~/.codex/config.toml`.
+`notion_token` is required for machines that import `programs/agents/codex/default.nix`. Home Manager validates that it is a non-empty string before making changes, writes it at activation time to the mode-`0600` file `~/.config/runtime-env/notion-token`, and configures Codex with the managed `notion-api` MCP server. The token is not written to the Nix store or `~/.codex/config.toml`.
 
 `paste_api_url` is optional and is written at activation time to `~/.config/runtime-env/paste.fish` as `WAN_PASTE_URL`. The `wan-copy` and `wan-paste` Fish functions require it and will print a warning if it is not configured.
 
@@ -129,7 +113,7 @@ The current runtime generator reads this file from `/home/wanmixc/configuration/
 
 ## Pi Coding Agent
 
-`pi-coding-agent` is imported by all three host targets through `programs/pi/default.nix`. Its Mimo provider uses the generated `MIMO_API_KEY` environment variable. The Pi extensions are installed declaratively from `programs/pi/packages/` and their exact versions are pinned in `programs/pi/config.nix`, so Pi does not perform an online package update check at startup. Update the package manifest, lockfile, and Pi version pins together when upgrading them.
+`pi-coding-agent` is imported by all three host targets through `programs/agents/pi/default.nix`. Its Mimo provider uses the generated `MIMO_API_KEY` environment variable. The Pi extensions are installed declaratively from `programs/agents/pi/packages/` and their exact versions are pinned in `programs/agents/pi/config.nix`, so Pi does not perform an online package update check at startup. Update the package manifest, lockfile, and Pi version pins together when upgrading them.
 
 ### Long-task ntfy notifications
 
@@ -139,14 +123,14 @@ The local Pi extension sends one notification when an interactive task finishes 
 
 Add `ntfy_url` (the full HTTPS topic URL) to your local `secrets.json`, preserving its other keys. No token is used. Restrict access with `chmod 600 secrets.json`. The extension reads this file at notification time, so URL changes need no rebuild. Neither the URL nor the file contents are evaluated by Nix or copied into the Nix store. An unauthenticated topic is not private from anyone who knows its URL; use an unguessable topic and do not share it.
 
-Edit `autoChatName.enable` and `ntfyNotifications.enable` independently in `programs/pi/extensions.nix`; the extension is installed when either feature is enabled. Change `thresholdSeconds` (non-negative integer seconds) or the runtime `secretsFile` path there as well. Apply with your usual Home Manager switch (VPS: `home-manager switch --flake .#wanmixc-vps`), then restart Pi or run `/reload`. Ensure the new extension files are Git-tracked before using a Git-backed flake; Git flakes exclude untracked files.
+Edit `autoChatName.enable` and `ntfyNotifications.enable` independently in `programs/agents/pi/extensions.nix`; the extension is installed when either feature is enabled. Change `thresholdSeconds` (non-negative integer seconds) or the runtime `secretsFile` path there as well. Apply with your usual Home Manager switch (VPS: `home-manager switch --flake .#wanmixc-vps`), then restart Pi or run `/reload`. Ensure the new extension files are Git-tracked before using a Git-backed flake; Git flakes exclude untracked files.
 
 Notifications include the server hostname, folder (`~` for your home directory), current Pi chat name, duration, and status. The title is `Pi finished — <server>` or `Pi error — <server>`. Name your chat with `/name`; unnamed chats show `Unnamed chat`, never a prompt-derived fallback. Folder paths and chat names are sent to ntfy, but prompts, code, and raw errors are not. Metadata is kept on one line per field and truncated to 240 characters per field. Delivery runs in the background with a five-second deadline, without redirects or retries. Missing/invalid configuration or failed delivery produces a generic local warning and does not fail the task. Cancelling a retry with the configured interrupt key (normally Esc) also stays silent.
 
 Run the offline tests with:
 
 ```sh
-node --test programs/pi/tests/*.test.mjs
+node --test programs/agents/pi/tests/*.test.mjs
 ```
 
 ## Paste Commands
@@ -237,8 +221,8 @@ home-manager switch --impure --flake .#wanmixc-vps
 
 ## Notes
 
-- Desktop-only integrations such as Edge and Codex Chrome DevTools MCP are enabled through [programs/desktop.nix](programs/desktop.nix) and currently imported by `cachyos-nix`.
-- Claude Code is packaged in [programs/claude-code.nix](programs/claude-code.nix) by overriding `pkgs.claude-code` to the pinned upstream binary version.
+- Desktop-only integrations such as Edge and Codex Chrome DevTools MCP are enabled through [programs/desktop/apps.nix](programs/desktop/apps.nix) and currently imported by `cachyos-nix`.
+- Claude Code is packaged in [programs/agents/claude-code.nix](programs/agents/claude-code.nix) by overriding `pkgs.claude-code` to the pinned upstream binary version.
 - Herdr itself is configured in [programs/herdr/default.nix](programs/herdr/default.nix), with raw TOML config in [programs/herdr/config.toml](programs/herdr/config.toml). Herdr and Herdr Plus are imported by all three host profiles.
-- Herdr Plus is installed and registered by [programs/herdr-plus.nix](programs/herdr-plus.nix).
-- Hermes Agent is available through [programs/hermes.nix](programs/hermes.nix), but is not currently imported by a host profile.
+- Herdr Plus is installed and registered by [programs/herdr/plus.nix](programs/herdr/plus.nix).
+- Hermes Agent is available through [programs/agents/hermes.nix](programs/agents/hermes.nix), but is not currently imported by a host profile.
