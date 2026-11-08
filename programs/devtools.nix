@@ -15,7 +15,7 @@
     speedtest-cli
     (python3.withPackages (pythonPackages: [ pythonPackages.mutagen ]))
     croc
-    pkgsUnstable.sshm
+    (pkgs.callPackage ./neossh/package.nix { })
   ];
 
   programs.direnv.enable = true;
