@@ -1,11 +1,11 @@
 { lib, fetchurl, runCommand, jq, python3, buildNpmPackage, makeBinaryWrapper, ripgrep, fd }:
 
 let
-  version = "1.1.0";
+  version = "1.5.0";
 
   rawSrc = fetchurl {
     url = "https://registry.npmjs.org/@earendil-works/pi-coding-agent/-/pi-coding-agent-${version}.tgz";
-    hash = "sha256-Cc2KCkPbsdgaZzRrCUALQ5znHYGMq6TpY+qViEahrtQ=";
+    sha256 = "5bfb66848a4c4b81c637ce8d2136be01945b70aac8e8556b091cb02241b385df";
   };
 
   # Since 1.0.0 the published tarball ships no lockfile. Generate one with
@@ -78,7 +78,7 @@ buildNpmPackage {
   pname = "pi-coding-agent";
   inherit version src;
 
-  npmDepsHash = "sha256-dB8OUdcpBrQKBy1jhIkXwjfWiAqDmjW5s2LO42UyYHo=";
+  npmDepsHash = "sha256-vS2bvmISxWo3HmHct7FT07Nc9CGO38g+hDRwqWw8Auo=";
 
   # The published tarball already ships a built dist/, so there is nothing
   # to compile; only install the pinned dependencies.
