@@ -21,7 +21,7 @@ Terminal multiplexer. Keys below reflect **your** config in
 | Keys | Action |
 |------|--------|
 | `⟨p⟩ p` | Herdr Plus: Projects picker |
-| `⟨p⟩ P` | Quick Actions picker (`prefix+shift+p`, commented out by default) |
+| `⟨p⟩ x` | Quick Actions picker (`prefix+x`, commented out by default) |
 | `⟨p⟩ f` | Herdr Recent Navigator |
 
 Configured via `[[keys.command]]` in `config.toml`; Herdr Plus and Recent
@@ -89,9 +89,15 @@ Navigator are installed declaratively by
 | `update.version_check` | `false` | No update checks |
 | `terminal.shell_mode` | `"auto"` | Auto-detect shell |
 | `terminal.new_cwd` | `"follow"` | New panes/tabs open in current pane's cwd |
-| `theme.name` | `"terminal"` | Inherit terminal colors |
+| `theme.name` | `"catppuccin"` | Catppuccin (dark) theme |
 | `ui.mouse_capture` | `true` | Mouse selects/focuses panes |
+| `ui.pane_borders` | `true` | Draw pane borders |
+| `ui.pane_gaps` | `true` | Add gaps between panes |
 | `ui.confirm_close` | `true` | Ask before closing a pane |
 | `ui.prompt_new_tab_name` | `false` | Don't prompt for tab name |
+| `ui.toast.delivery` | `"herdr"` | Show notifications inside Herdr |
+| `ui.toast.delay_seconds` | `1` | Delay agent-finished/needs-input toasts |
+| `ui.toast.herdr.position` | `"bottom-right"` | Toast position |
+| `experimental.kitty_graphics` | `true` | Render Kitty graphics in compatible terminals |
 
 Edit keys in `programs/herdr/config.toml` → rebuild home-manager → `⟨p⟩ r` to reload.
