@@ -16,6 +16,10 @@
     (python3.withPackages (pythonPackages: [ pythonPackages.mutagen ]))
     croc
     neossh
+    btop
+    oxker
+    bun
+    gitui
   ];
 
   programs.direnv.enable = true;

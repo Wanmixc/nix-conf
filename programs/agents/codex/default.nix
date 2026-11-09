@@ -217,8 +217,6 @@ in
     codexSupermemoryPkg
     notionMcpWrapper
     bash-language-server
-    bun
-    gitui
     nodejs
   ];
 
