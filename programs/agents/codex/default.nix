@@ -217,7 +217,6 @@ in
     codexSupermemoryPkg
     notionMcpWrapper
     bash-language-server
-    nodejs
   ];
 
   home.file.".codex/AGENTS.md" = {

@@ -20,6 +20,7 @@
     oxker
     bun
     gitui
+    nodejs
   ];
 
   programs.direnv.enable = true;
