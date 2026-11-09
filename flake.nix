@@ -8,8 +8,8 @@
     home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    herdr.url = "github:ogulcancelik/herdr/v0.7.4";
-    herdr.inputs.nixpkgs.follows = "nixpkgs";
+    herdr.url = "github:herdrdev/herdr/v0.9.5";
+    herdr.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     hermes-agent.url = "github:NousResearch/hermes-agent";
   };

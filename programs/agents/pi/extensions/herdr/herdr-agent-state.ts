@@ -2,23 +2,16 @@
 // managed by herdr; reinstalling or updating the integration overwrites this file.
 // add custom hooks/plugins beside this file instead of editing it.
 // HERDR_INTEGRATION_ID=pi
-// HERDR_INTEGRATION_VERSION=5
+// HERDR_INTEGRATION_VERSION=9
 // @ts-nocheck
-//
-// Vendored copy of Herdr's pi integration. Reports agent lifecycle state to
-// Herdr over its socket, which is more reliable than Herdr's screen-scraping
-// detection manifest (whose pi rules miss the leading gutter space on the
-// "<spinner> Working" line and therefore report idle while pi works).
-//
-// Refresh after a Herdr update with:
-//   herdr integration install pi
-//   cp ~/.pi/agent/extensions/herdr-agent-state.ts programs/pi/extensions/herdr/herdr-agent-state.ts
-//   herdr integration status   # confirm the reported version
 
-import { createConnection } from "node:net";
+import net from "node:net";
+import path from "node:path";
 
 const HERDR_ENV = process.env.HERDR_ENV;
 const socketPath = process.env.HERDR_SOCKET_PATH;
+const socketEndpoint =
+  process.platform === "win32" && socketPath ? `\\\\.\\pipe\\${socketPath}` : socketPath;
 const paneId = process.env.HERDR_PANE_ID;
 const source = "herdr:pi";
 
@@ -44,7 +37,7 @@ function sendRequestAttempt(request: unknown, timeoutMs: number): Promise<boolea
       resolve(delivered);
     };
 
-    const socket = createConnection(socketPath!);
+    const socket = net.createConnection(socketEndpoint!);
     socket.on("error", () => finish(false));
     socket.on("connect", () => socket.write(`${JSON.stringify(request)}\n`));
     socket.on("data", () => finish(true));
@@ -98,7 +91,10 @@ function updateSessionRef(ctx: any): void {
   try {
     const file = ctx?.sessionManager?.getSessionFile?.();
     currentAgentSessionPath =
-      typeof file === "string" && file.startsWith("/") ? file : undefined;
+      typeof file === "string" &&
+      (path.posix.isAbsolute(file) || path.win32.isAbsolute(file))
+        ? file
+        : undefined;
   } catch {
     currentAgentSessionPath = undefined;
   }
@@ -348,7 +344,9 @@ export default function (pi) {
   });
 
   pi.on("session_start", async (event, ctx) => {
-    if (ctx?.hasUI !== true) {
+    // TUI only: RPC/JSON/print modes are headless (no PTY Herdr can display),
+    // and RPC still reports hasUI=true, so mode is the reliable gate.
+    if (ctx?.mode !== "tui") {
       return;
     }
     rootSession = true;
@@ -390,6 +388,18 @@ export default function (pi) {
       return;
     }
 
+    scheduleIdle();
+  });
+
+  pi.on("agent_settled", (_event, ctx) => {
+    if (!rootSession || ctx?.isIdle?.() !== true) {
+      return;
+    }
+
+    agentActive = false;
+    if (retryHoldActive) {
+      return;
+    }
     scheduleIdle();
   });
 
