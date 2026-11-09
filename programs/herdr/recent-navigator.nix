@@ -1,13 +1,13 @@
 { pkgs, lib, ... }:
 let
-  version = "0.6.2";
+  version = "0.8.0";
   pluginId = "beyondlex.herdr-recent-navigator";
 
   source = pkgs.fetchFromGitHub {
     owner = "beyondlex";
     repo = "herdr-recent-navigator";
-    rev = "79cd2feaa8e493da32c230950545ec4c5ce2743b";
-    hash = "sha256-E1FEqTSgCjnhW44H8EFkA9t8Qmcaf6wMJ3H292x5/vs=";
+    rev = "5940b98ed52b8f87404699bda61eb46badd83605";
+    hash = "sha256-uTZpXUSmhC9aoJPoX6azh8cIL/pD5rOFPceuD9n8w04=";
   };
 
   herdr-recent-navigator = pkgs.rustPlatform.buildRustPackage {
@@ -15,7 +15,7 @@ let
     inherit version;
 
     src = source;
-    cargoHash = "sha256-I2cMQLQRO4TL6+BNWXwTVoWItcWAXUnjcLRh4QjMVKk=";
+    cargoHash = "sha256-ZWnM9s25in3SnYTaviJ1ljD9Yrtm0mkvGOWGxom0asw=";
 
     postInstall = ''
       install -Dm644 herdr-plugin.toml "$out/herdr-plugin.toml"
