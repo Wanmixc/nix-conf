@@ -7,6 +7,10 @@ let
     quietStartup = true;
     enableInstallTelemetry = false;
     collapseChangelog = true;
+    # Regular (main-screen) mode keeps the transcript in the terminal scrollback
+    # so Herdr copy mode (prefix+[) can scroll it line by line. Fullscreen mode
+    # draws on the alt screen, which Herdr cannot scroll.
+    tuiMode = "regular";
     # defaultProvider = "mimo";
     # defaultModel = "deepseek/deepseek-v4.1-flash:free";
     # defaultThinkingLevel = "medium";
