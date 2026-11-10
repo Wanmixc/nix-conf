@@ -35,42 +35,43 @@ let
     mv package.json.tmp package.json
     cp ${vendoredLockfile} package-lock.json
 
-    # Make Tab context-aware: autocomplete wins when visible; otherwise Tab
-    # queues a follow-up only while the agent is working. Keep these rewrites
-    # exact so a Pi upgrade fails loudly instead of silently losing behavior.
+    # The published tarball ships a prebuilt bundle, and the `pi` binary is
+    # dist/bundle/cli.js. Only that bundle runs, so every rewrite must target
+    # dist/bundle/chunks/*.js; the unbundled dist/modes/** tree is dead code
+    # for the CLI. Keep modifiers exact so a Pi upgrade fails loudly instead
+    # of silently losing behavior.
     ${python3}/bin/python3 - <<'PY'
 from pathlib import Path
+import glob
 
-replacements = {
-    Path("dist/modes/interactive/components/custom-editor.js"): (
-        """        // Check all other app actions
-""",
-        """        // Let autocomplete consume Tab before the follow-up action.
-        if (this.keybindings.matches(data, \"app.message.followUp\") && this.isShowingAutocomplete()) {
-            super.handleInput(data);
-            return;
-        }
-        // Check all other app actions
-""",
-    ),
-    Path("dist/modes/interactive/interactive-mode.js"): (
-        """        // If not streaming, Alt+Enter acts like regular Enter (trigger onSubmit)
-        else if (this.editor.onSubmit) {
-            this.editor.setText(\"\");
-            this.editor.onSubmit(text);
-        }
-""",
-        """        // Follow-up is only meaningful while the agent is working.
-        // When idle, Tab remains available for autocomplete and never submits.
-""",
-    ),
-}
+# --- dist/bundle/chunks: the code the `pi` binary actually executes ---
+skill_push_old = 'skillCommandList.push({name:commandName,description:this.prefixAutocompleteDescription(skill.description,skill.sourceInfo)})'
+skill_push_new = 'skillCommandList.push({name:commandName,description:this.prefixAutocompleteDescription(skill.description,skill.sourceInfo),argumentHint:"<request>"})'
 
-for path, (old, new) in replacements.items():
-    text = path.read_text()
-    if old not in text:
-        raise SystemExit(f"patch target not found: {path}")
-    path.write_text(text.replace(old, new, 1))
+# Enter on an open slash-command menu must fill the editor, not submit, so
+# arguments can be appended before the next Enter sends the prompt.
+confirm_old = 'this.autocompletePrefix.startsWith("/"))this.cancelAutocomplete();else{this.cancelAutocomplete(),this.onChange&&this.onChange(this.getText());return}}}}'
+confirm_new = 'this.autocompletePrefix.startsWith("/")){this.cancelAutocomplete();return}else{this.cancelAutocomplete(),this.onChange&&this.onChange(this.getText());return}}}}'
+
+bundle_edits = [
+    ("skillCommandList.push", skill_push_old, skill_push_new),
+    ("slash confirm", confirm_old, confirm_new),
+]
+
+hits = {label: [] for label, _, _ in bundle_edits}
+for chunk in sorted(glob.glob("dist/bundle/chunks/*.js")):
+    text = Path(chunk).read_text()
+    original = text
+    for label, old, new in bundle_edits:
+        if old in text:
+            hits[label].append(chunk)
+            text = text.replace(old, new)
+    if text != original:
+        Path(chunk).write_text(text)
+
+for label, _, _ in bundle_edits:
+    if len(hits[label]) != 1:
+        raise SystemExit(f"expected exactly one bundle target for {label}, found {hits[label]}")
 PY
   '';
 in
@@ -85,55 +86,9 @@ buildNpmPackage {
   dontNpmBuild = true;
   npmFlags = [ "--ignore-scripts" "--omit=dev" ];
 
-  # pi-tui is a dependency installed by npm rather than part of src. Patch
-  # its Enter completion path after installation so slash/file completion
-  # never submits the prompt accidentally.
-  postInstall = ''
-      found=0
-      while IFS= read -r editor; do
-        ${python3}/bin/python3 - "$editor" <<'PY'
-from pathlib import Path
-import sys
-
-path = Path(sys.argv[1])
-text = path.read_text()
-confirm = '            if (kb.matches(data, "tui.select.confirm")) {'
-confirm_pos = text.find(confirm)
-if confirm_pos < 0:
-    raise SystemExit(f"confirm target not found: {path}")
-selected = '                const selected = this.autocompleteList.getSelectedItem();\n'
-selected_pos = text.find(selected, confirm_pos)
-provider = '                if (selected && this.autocompleteProvider) {\n'
-provider_pos = text.find(provider, selected_pos)
-if selected_pos < 0 or provider_pos < 0:
-    raise SystemExit(f"confirm selection target not found: {path}")
-insert_at = provider_pos + len(provider)
-text = text[:insert_at] + """                    const wasExactSlashCommand = this.autocompletePrefix.startsWith(\"/\") &&
-                        this.getText().trim() === `/''${selected.value}`;
-                    const slashPrefix = this.autocompletePrefix.startsWith(\"/\")
-                        ? this.autocompletePrefix.slice(1).toLowerCase()
-                        : \"\";
-                    const matchingSlashCommands = slashPrefix
-                        ? this.autocompleteList.filteredItems.filter((item) => item.value.toLowerCase().startsWith(slashPrefix))
-                        : [];
-                    const isOnlyMatchingSlashCommand = matchingSlashCommands.length === 1 &&
-                        matchingSlashCommands[0].value === selected.value;
-""" + text[insert_at:]
-slash = 'if (this.autocompletePrefix.startsWith("/")'
-slash_pos = text.find(slash, confirm_pos)
-if slash_pos < 0:
-    raise SystemExit(f"slash condition target not found: {path}")
-comment = '                        // Fall through to submit'
-comment_pos = text.find(comment, slash_pos)
-if comment_pos < 0:
-    raise SystemExit(f"slash submit marker not found: {path}")
-text = text[:comment_pos] + '                        if (!wasExactSlashCommand && !isOnlyMatchingSlashCommand)\n                            return;' + text[comment_pos + len(comment):]
-path.write_text(text)
-PY
-        found=$((found + 1))
-      done < <(find "$out" -path '*/node_modules/@earendil-works/pi-tui/dist/components/editor.js' -type f)
-      test "$found" -eq 1
-  '';
+  # pi-tui is bundled into dist/bundle/chunks at publish time, so the
+  # installed node_modules/@earendil-works/pi-tui copy is never loaded by the
+  # `pi` binary. Enter handling is patched in the bundle above instead.
 
   nativeBuildInputs = [ makeBinaryWrapper python3 ];
 
