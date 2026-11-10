@@ -6,6 +6,7 @@
     ../programs/shell/fish.nix
     ../programs/shell/starship
     ../programs/devtools.nix
+    ../programs/devtools/gitui
     ../programs/nvim
     ../programs/herdr
     ../programs/herdr/plus.nix

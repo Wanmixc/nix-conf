@@ -19,7 +19,6 @@
     btop
     oxker
     bun
-    gitui
     nodejs
   ];
 
