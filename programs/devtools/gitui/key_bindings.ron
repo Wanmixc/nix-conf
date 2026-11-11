@@ -11,4 +11,12 @@
     move_right: Some(( code: Char('l'), modifiers: "")),
     move_up:    Some(( code: Char('k'), modifiers: "")),
     move_down:  Some(( code: Char('j'), modifiers: "")),
+
+    // Commit with Enter instead of gitui's default Ctrl+D. Used by the
+    // commit message popup and tag annotation mode.
+    commit: Some(( code: Enter, modifiers: "")),
+
+    // Enter now commits, so it can no longer insert a newline. Uncomment to
+    // keep multi-line commit messages by inserting newlines with Alt+Enter.
+    // newline: Some(( code: Enter, modifiers: "ALT")),
 )
