@@ -9,6 +9,7 @@ end
 source("config")
 source("keymap")
 source("color")
+source("notify")
 source("lsp")
 source("filetree")
 source("bufferline")

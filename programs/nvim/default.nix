@@ -82,11 +82,11 @@ in
     "nvim/gitsigns.lua".source = ./gitsigns.lua;
     "nvim/harpoon.lua".source = ./harpoon.lua;
     "nvim/indentline.lua".source = ./indentline.lua;
-    "nvim/jupyter.lua".source = ./jupyter.lua;
     "nvim/keymap.lua".source = ./keymap.lua;
     "nvim/local.lua".source = ./local.lua;
     "nvim/lsp.lua".source = ./lsp.lua;
     "nvim/lualine.lua".source = ./lualine.lua;
+    "nvim/notify.lua".source = ./notify.lua;
     "nvim/refactoring.lua".source = ./refactoring.lua;
     "nvim/session.lua".source = ./session.lua;
     "nvim/spectre.lua".source = ./spectre.lua;
