@@ -23,6 +23,10 @@ in
     source = ./skills/commit-message-id;
     recursive = true;
   };
+  home.file.".claude/skills/teach" = {
+    source = ./skills/teach;
+    recursive = true;
+  };
   home.file.".claude/skills/herdr" = {
     source = ./skills/herdr;
     recursive = true;

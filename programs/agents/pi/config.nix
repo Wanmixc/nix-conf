@@ -91,6 +91,10 @@ in
     source = ../skills/commit-message-id;
     recursive = true;
   };
+  home.file.".pi/agent/skills/teach" = {
+    source = ../skills/teach;
+    recursive = true;
+  };
   home.file.".pi/agent/skills/herdr/SKILL.md".source = ../skills/herdr/SKILL.md;
 
   home.file."${piDir}/settings.json".text = builtins.toJSON settings;
