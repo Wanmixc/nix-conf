@@ -14,4 +14,13 @@ vim.keymap.set(
 )
 
 local telescope = require("telescope")
+telescope.setup({
+  defaults = {
+    mappings = {
+      n = {
+        ["q"] = require("telescope.actions").close,
+      },
+    },
+  },
+})
 telescope.load_extension("dap")
