@@ -31,6 +31,8 @@
     # which Pi reports at startup as a package that could bypass the extension
     # loader. Move it to peerDependencies to match Pi's expectation.
     ${pkgs.python3}/bin/python3 ${./packages/fix-host-deps.py} "$target/node_modules"
+    # Tell Herdr while a pi-permission-system dialog is awaiting input.
+    ${pkgs.python3}/bin/python3 ${./packages/fix-permission-herdr.py} "$target/node_modules"
   '';
 
   home.activation.validatePiNotionToken = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
