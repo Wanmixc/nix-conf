@@ -1,8 +1,9 @@
-{ pkgs, lib, ... }:
+{ pkgs, pkgsUnstable, lib, ... }:
 {
   home.packages = with pkgs; [
     microsoft-edge
-    mpv
+    # Match the host's fontconfig 2.18 rules; stable mpv uses 2.17.
+    pkgsUnstable.mpv
     sxiv
   ];
 
