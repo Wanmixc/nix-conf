@@ -65,6 +65,16 @@ let
 
   dotnetSdk = pkgs.dotnetCorePackages.sdk_10_0;
   roslynRuntime = pkgs.dotnetCorePackages.runtime_9_0;
+  lsp-endhints = pkgs.vimUtils.buildVimPlugin {
+    pname = "nvim-lsp-endhints";
+    version = "unstable-3224a1c";
+    src = pkgs.fetchFromGitHub {
+      owner = "chrisgrieser";
+      repo = "nvim-lsp-endhints";
+      rev = "3224a1c1b2fe1b067049764a154d4d727425fa6d";
+      hash = "sha256-OYINp7BgZ108BnGGAiB9teis9TRIw4C+afX9rvByt2Q=";
+    };
+  };
 in
 {
   xdg.configFile = {
@@ -128,6 +138,7 @@ in
     plugins = [
       dracula-vim
       nvim-lspconfig
+      lsp-endhints
       cmp-nvim-lsp
       cmp-buffer
       nvim-cmp

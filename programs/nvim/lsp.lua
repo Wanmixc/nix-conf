@@ -18,6 +18,11 @@ local source_mapping = {
 local lspkind = require("lspkind")
 local cmp = require("cmp")
 
+require("lsp-endhints").setup({
+  autoEnableHints = false,
+  icons = { type = ":", parameter = "", offspec = "", unknown = "" },
+})
+
 cmp.setup({
   snippet = {
     expand = function(args)
@@ -48,6 +53,17 @@ cmp.setup({
   },
 })
 
+-- Config in `~/configuration` powers `~/.config/nvim` (Nix symlink).
+-- Disable inline diagnostics with:
+--   vim.g.nvim_diagnostics_enable = false
+-- in `config.lua`.
+vim.diagnostic.config({
+  virtual_text = vim.g.nvim_diagnostics_enable,
+  signs = vim.g.nvim_diagnostic_signs,
+  underline = true,
+  float = true,
+})
+
 -- Diagnostic keymaps
 vim.keymap.set("n", "ge", function() vim.diagnostic.open_float(0, { scope = "line", border = "single" }) end)
 vim.keymap.set("n", "[d", function() vim.diagnostic.goto_prev() end)
@@ -60,6 +76,9 @@ vim.api.nvim_create_autocmd("LspAttach", {
     local bufnr = args.buf
     local client = vim.lsp.get_client_by_id(args.data.client_id)
     if not client then return end
+    if client:supports_method("textDocument/inlayHint") then
+      vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+    end
     vim.bo[bufnr].omnifunc = "v:lua.vim.lsp.omnifunc"
     vim.keymap.set("n", "gD", vim.lsp.buf.declaration, { buffer = bufnr })
     vim.keymap.set("n", "gd", vim.lsp.buf.definition, { buffer = bufnr })

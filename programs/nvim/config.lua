@@ -1,4 +1,8 @@
 -- config
+-- Disable inline diagnostic text:
+--   vim.g.nvim_diagnostics_enable = false
+if vim.g.nvim_diagnostics_enable == nil then vim.g.nvim_diagnostics_enable = true end
+if vim.g.nvim_diagnostic_signs == nil then vim.g.nvim_diagnostic_signs = true end
 vim.o.number = true
 vim.o.rnu = true
 vim.o.ignorecase = true
