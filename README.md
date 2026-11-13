@@ -91,7 +91,6 @@ If present, it may contain:
   "github_token": "your github token",
   "notion_token": "your Notion integration token",
   "paste_api_url": "https://your paste api domain",
-  "supermemory_codex_api_key": "your supermemory api key",
   "mimo_api_key": "your Mimo API key",
   "ntfy_url": "https://ntfy.example/your-private-topic"
 }
@@ -102,8 +101,6 @@ If present, it may contain:
 `notion_token` is required for machines that import `programs/agents/codex/default.nix`. Home Manager validates that it is a non-empty string before making changes, writes it at activation time to the mode-`0600` file `~/.config/runtime-env/notion-token`, and configures Codex with the managed `notion-api` MCP server. The token is not written to the Nix store or `~/.codex/config.toml`.
 
 `paste_api_url` is optional and is written at activation time to `~/.config/runtime-env/paste.fish` as `WAN_PASTE_URL`. The `wan-copy` and `wan-paste` Fish functions require it and will print a warning if it is not configured.
-
-`supermemory_codex_api_key` is optional and is written at activation time into runtime-only env files under `~/.config/runtime-env/`. Fish sources `supermemory.fish`; tmux also receives the variable when a tmux server is already running. This keeps the secret out of the Nix store.
 
 `mimo_api_key` is required on machines using Pi's configured Mimo provider. It is written to `~/.config/runtime-env/mimo.fish` as `MIMO_API_KEY`, and new Fish shells source this file automatically. `pi_api_key` is also accepted as a legacy fallback when `mimo_api_key` is absent.
 

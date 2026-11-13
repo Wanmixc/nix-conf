@@ -4,7 +4,6 @@
     ./github.nix
     ./mimo.nix
     ./paste.nix
-    ./supermemory.nix
   ];
 
   home.sessionVariables = {
@@ -18,10 +17,6 @@
 
     if test -f "$HOME/.config/runtime-env/gh.fish"
       source "$HOME/.config/runtime-env/gh.fish"
-    end
-
-    if test -f "$HOME/.config/runtime-env/supermemory.fish"
-      source "$HOME/.config/runtime-env/supermemory.fish"
     end
 
     if test -f "$HOME/.config/runtime-env/mimo.fish"
