@@ -47,6 +47,7 @@ let
     auto-session
     nvim-dap
     nvim-dap-ui
+    nvim-nio
     nvim-dap-virtual-text
     telescope-dap-nvim
     nvim-dap-go
@@ -113,6 +114,7 @@ in
     vimAlias = true;
 
     extraPackages = with pkgs; [
+      rust-analyzer
       typescript-language-server
       typescript
       roslyn-ls
@@ -183,6 +185,7 @@ in
       auto-session
       nvim-dap
       nvim-dap-ui
+      nvim-nio
       nvim-dap-virtual-text
       telescope-dap-nvim
       nvim-dap-go
