@@ -124,7 +124,7 @@
 ## Terminal (toggleterm)
 | Key | Mode | Action |
 |-----|------|--------|
-| `<C-\>` | n / i / t | Toggle terminal |
+| `<C-\>` | n / i / t | Toggle floating terminal |
 | `<esc>` | t | Exit terminal mode |
 | `jk` | t | Exit terminal mode |
 | `<C-h/j/k/l>` | t | Navigate windows from terminal |
