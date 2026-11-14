@@ -70,6 +70,25 @@ cmp.setup({
   },
 })
 
+-- Roslyn displays generic types with <> but inserts only the type name.
+cmp.event:on("confirm_done", function(event)
+  local entry = event.entry
+  if entry.source.name ~= "nvim_lsp" then return end
+  local client = entry.source.source.client
+  if not client or client.name ~= "roslyn_ls" then return end
+
+  local item = entry.completion_item
+  local name = item.label:match("^([%w_]+)<>$")
+  if not name then return end
+  local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+  local line = vim.api.nvim_get_current_line()
+  if line:sub(col - #name + 1, col) ~= name or line:sub(col + 1, col + 1) == "<" then return end
+
+  local brackets = line:sub(col + 1, col + 1) == ">" and "<" or "<>"
+  vim.api.nvim_buf_set_text(0, row - 1, col, row - 1, col, { brackets })
+  vim.api.nvim_win_set_cursor(0, { row, col + 1 })
+end)
+
 -- Config in `~/configuration` powers `~/.config/nvim` (Nix symlink).
 -- Disable inline diagnostics with:
 --   vim.g.nvim_diagnostics_enable = false
