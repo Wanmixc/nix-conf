@@ -70,6 +70,8 @@
 | `<leader>p` | n / v | Paste from clipboard |
 | `<leader>P` | n / v | Paste before from clipboard |
 | `<C-i>` | i | Insert 2 spaces (indent) |
+| `ga=` | v | Align selected lines at `=` |
+| `gA=` | v | Preview alignment at `=`; press Enter to accept |
 | `jj` | i | Escape (from old config) |
 
 ---

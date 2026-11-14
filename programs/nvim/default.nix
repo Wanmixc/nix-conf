@@ -3,6 +3,7 @@ let
   inherit (pkgs.vimPlugins)
     dracula-vim
     nvim-lspconfig
+    mini-align
     cmp-nvim-lsp
     cmp-buffer
     cmp_luasnip
@@ -142,6 +143,7 @@ in
     plugins = [
       dracula-vim
       nvim-lspconfig
+      mini-align
       lsp-endhints
       cmp-nvim-lsp
       cmp-buffer

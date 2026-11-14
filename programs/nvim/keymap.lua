@@ -3,6 +3,8 @@
 vim.g.mapleader = " "
 vim.keymap.set("n", "<space", "<nop>", { silent = true })
 
+require("mini.align").setup()
+
 -- exit insert mode
 vim.keymap.set("i", "jj", "<Esc>", { silent = true })
 
