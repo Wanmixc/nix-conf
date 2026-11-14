@@ -113,7 +113,7 @@
 | `<space>D` | n | Type definition |
 | `<space>rn` | n | Rename |
 | `<space>ca` | n | Code action |
-| `<space>fo` | n | Format buffer |
+| `<space>fo` | n | Format buffer; align C# assignments within brace blocks |
 | `ge` | n | Show diagnostic float |
 | `[d` | n | Previous diagnostic |
 | `]d` | n | Next diagnostic |

@@ -127,7 +127,26 @@ vim.api.nvim_create_autocmd("LspAttach", {
     vim.keymap.set("n", "<space>rn", vim.lsp.buf.rename, { buffer = bufnr })
     vim.keymap.set("n", "<space>ca", vim.lsp.buf.code_action, { buffer = bufnr })
     vim.keymap.set("n", "gr", vim.lsp.buf.references, { buffer = bufnr })
-    vim.keymap.set("n", "<space>fo", function() vim.lsp.buf.format({ timeout_ms = 5000 }) end, { buffer = bufnr })
+    vim.keymap.set("n", "<space>fo", function()
+      if vim.bo[bufnr].filetype ~= "cs" then
+        vim.lsp.buf.format({ bufnr = bufnr, timeout_ms = 5000 })
+        return
+      end
+      local roslyn = vim.lsp.get_clients({ bufnr = bufnr, name = "roslyn_ls" })[1]
+      if not roslyn or not roslyn:supports_method("textDocument/formatting") then
+        vim.notify("C# formatting unavailable: Roslyn is not attached", vim.log.levels.WARN)
+        return
+      end
+      local response, err = roslyn:request_sync("textDocument/formatting", vim.lsp.util.make_formatting_params({}), 5000, bufnr)
+      if not response or response.err then
+        vim.notify("C# formatting failed: " .. tostring(err or (response and response.err.message)), vim.log.levels.ERROR)
+        return
+      end
+      if response.result and response.result ~= vim.NIL then
+        vim.lsp.util.apply_text_edits(response.result, bufnr, roslyn.offset_encoding)
+      end
+      dofile(vim.fn.stdpath("config") .. "/csharp-align.lua")(bufnr)
+    end, { buffer = bufnr })
   end,
 })
 

@@ -90,6 +90,7 @@ in
     "nvim/color.lua".source = ./color.lua;
     "nvim/comment.lua".source = ./comment.lua;
     "nvim/config.lua".source = ./config.lua;
+    "nvim/csharp-align.lua".source = ./csharp-align.lua;
     "nvim/dap.lua".source = ./dap.lua;
     "nvim/filetree.lua".source = ./filetree.lua;
     "nvim/fold.lua".source = ./fold.lua;
