@@ -5,8 +5,10 @@ let
     nvim-lspconfig
     cmp-nvim-lsp
     cmp-buffer
+    cmp_luasnip
     nvim-cmp
     luasnip
+    friendly-snippets
     lspkind-nvim
     null-ls-nvim
     markdown-preview-nvim
@@ -143,8 +145,10 @@ in
       lsp-endhints
       cmp-nvim-lsp
       cmp-buffer
+      cmp_luasnip
       nvim-cmp
       luasnip
+      friendly-snippets
       lspkind-nvim
       null-ls-nvim
       markdown-preview-nvim
