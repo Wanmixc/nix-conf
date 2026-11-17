@@ -1,6 +1,12 @@
 -- color
 vim.api.nvim_command("colorscheme dracula")
 vim.api.nvim_command("highlight Normal guibg=none ctermbg=none")
+
+-- Visual selection: Dracula only links Visual, so Neovim's default
+-- NvimDarkGrey4 (#4f5258) wins and nearly vanishes on the translucent
+-- terminal background (1.88:1). Use a pale yellow block with dark text.
+vim.api.nvim_command("highlight Visual guibg=#f1fa8c guifg=#24273a")
+vim.api.nvim_command("highlight VisualNOS guibg=#f1fa8c guifg=#24273a")
 vim.api.nvim_command("highlight WinBar guibg=#44475A")
 vim.api.nvim_command("highlight WinSeparator guifg=None")
 vim.api.nvim_command("highlight NvimTreeVertSplit guibg=None")
