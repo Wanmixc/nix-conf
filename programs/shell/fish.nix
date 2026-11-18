@@ -89,6 +89,9 @@
           bind -M default -m insert i repaint-mode
           bind -M insert \en accept-autosuggestion
           bind -M default \en accept-autosuggestion
+          # Alt+j runs the line, like Enter, without leaving the current mode.
+          bind -M insert \ej execute
+          bind -M default \ej execute
           bind -M insert \cr history-pager
           bind -M default \cr history-pager
           bind -M insert \ct __wanmixc_fzf_ctrl_t
