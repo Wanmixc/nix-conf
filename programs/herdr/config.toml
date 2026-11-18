@@ -100,5 +100,8 @@ pane_gaps           = true
 confirm_close       = true  # ask before closing a pane
 prompt_new_tab_name = false # don't prompt for tab name
 
+[ui.sound]
+enabled = false             # no audio on agent state changes
+
 [experimental]
 kitty_graphics = true       # render Kitty graphics in compatible outer terminals
