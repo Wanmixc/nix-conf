@@ -87,6 +87,8 @@
         body = ''
           bind -M insert -m default jj repaint-mode
           bind -M default -m insert i repaint-mode
+          bind -M insert \en accept-autosuggestion
+          bind -M default \en accept-autosuggestion
           bind -M insert \cr history-pager
           bind -M default \cr history-pager
           bind -M insert \ct __wanmixc_fzf_ctrl_t
