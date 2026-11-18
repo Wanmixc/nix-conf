@@ -3,7 +3,7 @@
 Terminal multiplexer. Keys below reflect **your** config in
 [`programs/herdr/config.toml`](config.toml).
 
-> **Prefix = `Ctrl+a`** — press it, release, then press the next key.
+> **Prefix = `Alt+a`** — press it, release, then press the next key.
 > Notation: `⟨p⟩ x` means "prefix, then `x`".
 
 ---

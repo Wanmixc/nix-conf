@@ -18,7 +18,7 @@ new_cwd    = "follow"       # new panes/tabs inherit current cwd
 #  Keybindings                (prefix, then key — like tmux)
 # ============================================================
 [keys]
-prefix        = "ctrl+a"    # leader for every mapping below
+prefix        = "alt+a"     # leader for every mapping below
 
 # --- Session ------------------------------------------------
 detach         = "prefix+q" # detach, leave session running
