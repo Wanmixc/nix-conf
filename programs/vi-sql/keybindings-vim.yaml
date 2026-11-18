@@ -1,0 +1,5 @@
+# Partial override: everything not listed here keeps vi-sql's built-in default.
+common:
+    confirm:
+        keys: [Alt+p]
+        description: Confirm

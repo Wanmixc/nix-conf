@@ -50,10 +50,12 @@ Neovim policy:
 │   ├── default.nix  # overlay
 │   ├── neossh.nix
 │   ├── notion-mcp-server/
-│   └── pi-coding-agent/
+│   ├── pi-coding-agent/
+│   └── vi-sql.nix
 ├── programs/
 │   ├── base.nix
 │   ├── devtools.nix
+│   ├── vi-sql/      # seeded config.yaml and keybinding overrides
 │   ├── git.nix
 │   ├── env/         # runtime env from secrets.json
 │   ├── nvim/

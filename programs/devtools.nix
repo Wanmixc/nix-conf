@@ -18,6 +18,7 @@
     neossh
     btop
     oxker
+    vi-sql
     bun
     nodejs
   ];

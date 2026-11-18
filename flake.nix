@@ -43,7 +43,7 @@
           };
         in
         {
-          inherit (pkgs) neossh notion-mcp-server pi-coding-agent;
+          inherit (pkgs) neossh notion-mcp-server pi-coding-agent vi-sql;
         };
 
       homeConfigurations = {
