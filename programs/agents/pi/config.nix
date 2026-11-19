@@ -1,6 +1,10 @@
-{ pkgs, secretsPath, ... }:
+{ pkgs, lib, config, secretsPath, ... }:
 let
   piDir = ".pi/agent";
+
+  # Chrome DevTools MCP drives a real browser. Only the desktop profile installs
+  # Microsoft Edge, so expose the server only on hosts where that binary exists.
+  hasEdge = builtins.elem pkgs.microsoft-edge config.home.packages;
 
   settings = {
     theme = "dark";
@@ -75,6 +79,16 @@ let
     mcpServers = {
       notion-api = {
         command = "${notionMcpWrapper}/bin/notion-mcp-server";
+      };
+    } // lib.optionalAttrs hasEdge {
+      chrome-devtools = {
+        command = "${pkgs.nodejs}/bin/npx";
+        args = [
+          "-y"
+          "chrome-devtools-mcp@latest"
+          "--executablePath"
+          "${pkgs.microsoft-edge}/bin/microsoft-edge"
+        ];
       };
     };
   };
