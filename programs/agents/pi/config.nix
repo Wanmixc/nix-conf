@@ -73,6 +73,10 @@ let
   # same mcpServers shape as other MCP clients.
   mcpConfig = {
     mcpServers = {
+      pencil = {
+        command = "/mnt/c/Users/itd18/AppData/Local/Programs/Pen/resources/app.asar.unpacked/out/mcp-server-windows-x64.exe";
+        args = [ "--app" "desktop" "--agent" "codexCLI" ];
+      };
       notion-api = {
         command = "${notionMcpWrapper}/bin/notion-mcp-server";
       };
