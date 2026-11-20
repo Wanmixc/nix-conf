@@ -122,6 +122,12 @@ in
   home.file.".pi/agent/skills/herdr/SKILL.md".source = ../skills/herdr/SKILL.md;
 
   home.file."${piDir}/settings.json".text = builtins.toJSON settings;
+  home.file."${piDir}/zentui.json".text = builtins.toJSON {
+    components.footer.styles.starship = {
+      format = "$os $username $cwd($sep$session_name)( on $git_branch)($git_status)( via $runtime)$fill($context)($sep$tokens)($sep$time)";
+      segments.cost = false;
+    };
+  };
   home.file."${piDir}/keybindings.json".text = builtins.toJSON {
     # Use Tab for queued follow-up messages while Pi is working. Pi's patched
     # editor gives autocomplete priority when a completion menu is visible.
