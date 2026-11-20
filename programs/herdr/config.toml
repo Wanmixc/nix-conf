@@ -88,7 +88,8 @@ name = "catppuccin"         # Catppuccin (dark); "catppuccin-latte" for light
 
 [ui.toast]
 delivery      = "herdr"       # show notifications inside Herdr
-delay_seconds = 1              # delay agent-finished/needs-input toasts
+delay_seconds = 0              # Herdr chimes once per notification stage; the delayed
+                               # stage would repeat the chime, so keep both stages together
 
 [ui.toast.herdr]
 position = "bottom-right"
@@ -101,7 +102,10 @@ confirm_close       = true  # ask before closing a pane
 prompt_new_tab_name = false # don't prompt for tab name
 
 [ui.sound]
-enabled = false             # no audio on agent state changes
+enabled      = true                  # audible chime when an agent finishes
+path         = "sounds/silent.mp3"   # generic notifications stay quiet
+request_path = "sounds/silent.mp3"   # needs-attention stays quiet
+done_path    = "sounds/done.mp3"     # exactly one chime per finished task
 
 [experimental]
 kitty_graphics = true       # render Kitty graphics in compatible outer terminals
