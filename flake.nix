@@ -22,14 +22,14 @@
         inherit system;
         config.allowUnfree = true;
       };
-      mkHome = module:
+      mkHome = hostName: module:
         home-manager.lib.homeManagerConfiguration {
           pkgs = import nixpkgs {
             inherit system;
             config.allowUnfree = true;
           };
 
-          extraSpecialArgs = { inherit herdr inputs system secretsPath pkgsUnstable; };
+          extraSpecialArgs = { inherit herdr inputs system secretsPath pkgsUnstable hostName; };
 
           modules = [ module ];
         };
@@ -47,9 +47,9 @@
         };
 
       homeConfigurations = {
-        "wanmixc-cachyos-nix" = mkHome ./hosts/cachyos-nix.nix;
-        "wanmixc-wsl" = mkHome ./hosts/wsl.nix;
-        "wanmixc-vps" = mkHome ./hosts/vps.nix;
+        "wanmixc-cachyos-nix" = mkHome "cachyos-nix" ./hosts/cachyos-nix.nix;
+        "wanmixc-wsl" = mkHome "wsl" ./hosts/wsl.nix;
+        "wanmixc-vps" = mkHome "vps" ./hosts/vps.nix;
       };
     };
 }

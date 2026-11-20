@@ -1,4 +1,4 @@
-{ pkgs, lib, config, secretsPath, ... }:
+{ pkgs, lib, config, hostName, secretsPath, ... }:
 let
   piDir = ".pi/agent";
 
@@ -77,12 +77,18 @@ let
   # same mcpServers shape as other MCP clients.
   mcpConfig = {
     mcpServers = {
+      notion-api = {
+        command = "${notionMcpWrapper}/bin/notion-mcp-server";
+      };
+    } // lib.optionalAttrs (hostName == "cachyos-nix") {
+      pencil = {
+        command = "/home/wanmixc/.local/opt/pen/resources/app.asar.unpacked/out/mcp-server-linux-x64";
+        args = [ "--app" "desktop" "--agent" "piAgent" ];
+      };
+    } // lib.optionalAttrs (hostName == "wsl") {
       pencil = {
         command = "/mnt/c/Users/itd18/AppData/Local/Programs/Pen/resources/app.asar.unpacked/out/mcp-server-windows-x64.exe";
         args = [ "--app" "desktop" "--agent" "codexCLI" ];
-      };
-      notion-api = {
-        command = "${notionMcpWrapper}/bin/notion-mcp-server";
       };
     } // lib.optionalAttrs hasEdge {
       chrome-devtools = {
