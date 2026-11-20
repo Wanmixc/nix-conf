@@ -147,19 +147,19 @@
       };
     };
 
+    keymap = {
+      mgr.prepend_keymap = [
+        {
+          on = [ "g" "d" ];
+          run = "cd ~/Extra/Development";
+          desc = "Go to Development";
+        }
+      ];
+    };
+
     settings = {
       mgr = {
         show_hidden = true;
-      };
-
-      keymap = {
-        mgr.prepend_keymap = [
-          {
-            on = [ "g" "d" ];
-            run = "cd ~/Extra/Development";
-            desc = "Go to Development";
-          }
-        ];
       };
 
       opener = {
