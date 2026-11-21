@@ -36,6 +36,8 @@
     # ModelBench 0.1.2 only recognizes spec-style Node test summaries; include
     # the default TAP summary used by the coding-agent fixtures.
     ${pkgs.python3}/bin/python3 ${./packages/fix-modelbench-test-counts.py} "$target/node_modules/pi-modelbench"
+    # Add a calendar-date segment to the ZenUI footer format.
+    ${pkgs.python3}/bin/python3 ${./packages/fix-zentui-date.py} "$target/node_modules/pi-zentui"
   '';
 
   home.activation.validatePiNotionToken = lib.hm.dag.entryBefore [ "writeBoundary" ] ''

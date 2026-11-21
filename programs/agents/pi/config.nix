@@ -125,7 +125,7 @@ in
   home.file."${piDir}/settings.json".text = builtins.toJSON settings;
   home.file."${piDir}/zentui.json".text = builtins.toJSON {
     components.footer.styles.starship = {
-      format = "$os $username $cwd($sep$session_name)( on $git_branch)($git_status)( via $runtime)$fill($context)($sep$tokens)($sep$time)";
+      format = "$os $username $cwd($sep$session_name)( on $git_branch)($git_status)( via $runtime)$fill($context)($sep$tokens)($sep$time $date)";
       segments.cost = false;
     };
   };
