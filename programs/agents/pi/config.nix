@@ -29,6 +29,7 @@ let
       "npm:pi-web-access@0.22.0"
       "npm:@gotgenes/pi-permission-system@25.0.0"
       "npm:pi-zentui@0.18.1"
+      "npm:pi-modelbench@0.1.2"
     ];
   };
 

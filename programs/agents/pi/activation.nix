@@ -33,6 +33,9 @@
     ${pkgs.python3}/bin/python3 ${./packages/fix-host-deps.py} "$target/node_modules"
     # Tell Herdr while a pi-permission-system dialog is awaiting input.
     ${pkgs.python3}/bin/python3 ${./packages/fix-permission-herdr.py} "$target/node_modules"
+    # ModelBench 0.1.2 only recognizes spec-style Node test summaries; include
+    # the default TAP summary used by the coding-agent fixtures.
+    ${pkgs.python3}/bin/python3 ${./packages/fix-modelbench-test-counts.py} "$target/node_modules/pi-modelbench"
   '';
 
   home.activation.validatePiNotionToken = lib.hm.dag.entryBefore [ "writeBoundary" ] ''
