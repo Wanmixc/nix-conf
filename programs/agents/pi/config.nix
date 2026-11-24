@@ -29,6 +29,7 @@ let
       "npm:pi-web-access@0.22.0"
       "npm:@gotgenes/pi-permission-system@25.0.0"
       "npm:pi-zentui@0.18.1"
+      "npm:pi-modelbench@0.1.2"
     ];
   };
 
@@ -135,7 +136,7 @@ in
   home.file."${piDir}/settings.json".text = builtins.toJSON settings;
   home.file."${piDir}/zentui.json".text = builtins.toJSON {
     components.footer.styles.starship = {
-      format = "$os $username $cwd($sep$session_name)( on $git_branch)($git_status)( via $runtime)$fill($context)($sep$tokens)($sep$time)";
+      format = "$os $username $cwd($sep$session_name)( on $git_branch)($git_status)( via $runtime)$fill($context)($sep$tokens)($sep$time $date)";
       segments.cost = false;
     };
   };
