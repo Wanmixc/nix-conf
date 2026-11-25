@@ -94,6 +94,7 @@ If present, it may contain:
   "notion_token": "your Notion integration token",
   "paste_api_url": "https://your paste api domain",
   "mimo_api_key": "your Mimo API key",
+  "tokenharbor_api_key": "your TokenHarbor API key",
   "ntfy_url": "https://ntfy.example/your-private-topic"
 }
 ```
@@ -105,6 +106,8 @@ If present, it may contain:
 `paste_api_url` is optional and is written at activation time to `~/.config/runtime-env/paste.fish` as `WAN_PASTE_URL`. The `wan-copy` and `wan-paste` Fish functions require it and will print a warning if it is not configured.
 
 `mimo_api_key` is required on machines using Pi's configured Mimo provider. It is written to `~/.config/runtime-env/mimo.fish` as `MIMO_API_KEY`, and new Fish shells source this file automatically. `pi_api_key` is also accepted as a legacy fallback when `mimo_api_key` is absent.
+
+`tokenharbor_api_key` enables the `tokenharbor` Pi provider at `https://tokenharbor.ai/v1`, with `deepseek-v4.1-flash:free` available as a model. The key is written at activation time to the mode-`0600` file `~/.config/runtime-env/tokenharbor.fish` as `TOKENHARBOR_API_KEY`; new Fish shells source this file automatically. The key is not written to the Nix store or Pi's declarative model configuration.
 
 If the file is absent, the configuration still evaluates successfully. A Home Manager switch for a machine with Codex fails before the write boundary when `notion_token` is absent or empty.
 

@@ -67,6 +67,17 @@ let
           }
         ];
       };
+      tokenharbor = {
+        baseUrl = "https://tokenharbor.ai/v1";
+        api = "openai-completions";
+        apiKey = "$TOKENHARBOR_API_KEY";
+        models = [
+          {
+            id = "deepseek-v4.1-flash:free";
+            name = "deepseek-v4.1-flash:free";
+          }
+        ];
+      };
     };
   };
 

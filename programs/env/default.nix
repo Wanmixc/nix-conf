@@ -3,6 +3,7 @@
   imports = [
     ./github.nix
     ./mimo.nix
+    ./tokenharbor.nix
     ./paste.nix
   ];
 
@@ -21,6 +22,10 @@
 
     if test -f "$HOME/.config/runtime-env/mimo.fish"
       source "$HOME/.config/runtime-env/mimo.fish"
+    end
+
+    if test -f "$HOME/.config/runtime-env/tokenharbor.fish"
+      source "$HOME/.config/runtime-env/tokenharbor.fish"
     end
   '';
 }
