@@ -92,6 +92,11 @@
           # Alt+j runs the line, like Enter, without leaving the current mode.
           bind -M insert \ej execute
           bind -M default \ej execute
+          # Free ctrl-j (LF). ctrl-m cannot be freed: it is the same key as
+          # enter (CR), so erasing it would break Enter.
+          bind --preset -e -M insert \cj
+          bind --preset -e -M default \cj
+          bind --preset -e -M visual \cj
           bind -M insert \cr history-pager
           bind -M default \cr history-pager
           bind -M insert \ct __wanmixc_fzf_ctrl_t
