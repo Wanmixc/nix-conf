@@ -102,6 +102,17 @@ let
         command = "/mnt/c/Users/itd18/AppData/Local/Programs/Pen/resources/app.asar.unpacked/out/mcp-server-windows-x64.exe";
         args = [ "--app" "desktop" "--agent" "codexCLI" ];
       };
+      playwright = {
+        command = "${pkgs.nodejs}/bin/npx";
+        args = [ "-y" "@playwright/mcp@latest" "--browser" "msedge" ];
+        env = {
+          PLAYWRIGHT_MCP_EXECUTABLE_PATH = "${pkgs.microsoft-edge}/bin/microsoft-edge";
+          PLAYWRIGHT_MCP_HEADLESS = "false";
+          DISPLAY = ":0";
+          WAYLAND_DISPLAY = "wayland-0";
+          XDG_RUNTIME_DIR = "/mnt/wslg/runtime-dir";
+        };
+      };
     } // lib.optionalAttrs hasEdge {
       chrome-devtools = {
         command = "${pkgs.nodejs}/bin/npx";

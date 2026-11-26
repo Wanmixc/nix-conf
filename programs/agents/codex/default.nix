@@ -1,4 +1,4 @@
-{ pkgs, lib, secretsPath, ... }:
+{ pkgs, lib, secretsPath, hostName, ... }:
 let
   codexPkg = pkgs.stdenvNoCC.mkDerivation {
     pname = "codex";
@@ -115,4 +115,15 @@ in
       "$config_file" \
       "${notionMcpWrapper}/bin/notion-mcp-server"
   '';
+
+  home.activation.playwrightMcp = lib.hm.dag.entryAfter [ "codexNotion" ] (lib.optionalString (hostName == "wsl") ''
+    ${codexPkg}/bin/codex mcp remove playwright >/dev/null 2>&1 || true
+    ${codexPkg}/bin/codex mcp add playwright \
+      --env "PLAYWRIGHT_MCP_EXECUTABLE_PATH=${pkgs.microsoft-edge}/bin/microsoft-edge" \
+      --env "PLAYWRIGHT_MCP_HEADLESS=false" \
+      --env "DISPLAY=:0" \
+      --env "WAYLAND_DISPLAY=wayland-0" \
+      --env "XDG_RUNTIME_DIR=/mnt/wslg/runtime-dir" \
+      -- ${pkgs.nodejs}/bin/npx -y @playwright/mcp@latest --browser msedge
+  '');
 }
