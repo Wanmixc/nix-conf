@@ -7,6 +7,12 @@
     sxiv
   ];
 
+  xdg.desktopEntries.zen-browser-private = {
+    name = "Zen Browser (Private)";
+    exec = "zen-browser --private-window";
+    icon = "zen-browser";
+  };
+
   xdg.configFile."mpv/mpv.conf".text = ''
     keep-open=yes
     vo=wlshm
