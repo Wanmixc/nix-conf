@@ -36,7 +36,6 @@
       ll = "eza --icons --group-directories-first -T -L 1";
       l1 = "eza --icons --group-directories-first -T -L 1";
       l2 = "eza --icons --group-directories-first -T -L 2";
-      h = "hyprland";
       cachy-nix = "home-manager switch --impure --flake .#wanmixc-cachyos-nix";
       wsl-nix = "home-manager switch --impure --flake .#wanmixc-wsl";
       vps-nix = "home-manager switch --impure --flake .#wanmixc-vps";
